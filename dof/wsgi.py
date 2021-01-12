@@ -5,7 +5,7 @@
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
 """
-    WSGI config for the nhbapps project.
+    WSGI config for the DOF project.
 
     It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -17,7 +17,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'nhbapps.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dof.settings')
 
 application = get_wsgi_application()
 
