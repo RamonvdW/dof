@@ -1,0 +1,70 @@
+{% extends 'plein/site_layout.dtl' %}
+{% comment %}
+                Copyright (c) 2020-2021 Ramon van der Winkel.
+                All rights reserved.
+                Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
+{% endcomment %}
+{% load static %}
+
+{% block title %}Plein{% endblock %}
+
+{% block pagina %}
+
+    <h4>Hallo!</h4>
+
+    <p>Op deze pagina kan je je producten beheren.</p>
+
+    <!-- producten beheren -->
+    {% url 'Producten:producten' as card_url %}
+    {% include 'plein/card.dtl' with title="Producten" text="Beheer de digitale producten die geleverd kunnen worden." icon="article" url=card_url %}
+
+    <!-- opdrachten -->
+    {% url 'Producten:opdrachten' as card_url %}
+    {% include 'plein/card.dtl' with title="Opdrachten" text="Bekijk de ontvangen opdrachten en geef producten vrij." icon="inbox" url=card_url %}
+
+    <!-- leveringsgeschiedenis en statistiek -->
+    {% url 'Producten:leveringen' as card_url %}
+    {% include 'plein/card.dtl' with title="Leveringen" text="Bekijk de leveringen die gedaan zijn." icon="analytics" url=card_url %}
+
+    <p>
+        <a class="btn-dof-blauw" href="{% url 'Account:logout' %}" >
+            <i class="material-icons-round left">exit_to_app</i>Uitloggen</a>
+
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <a class="btn-dof-blauw" href="{% url 'Account:nieuw-wachtwoord' %}" >
+            <i class="material-icons-round left">https</i>Wachtwoord wijzigen</a>
+
+    </p>
+
+    <p>Voorstellen en feedback over deze site graag via de drie gekleurde smileys die op elke pagina te vinden zijn.</p>
+
+    {% include 'overig/site-feedback-sidebar.dtl' with op_pagina="plein-beheerder" %}
+
+    {% if rol_is_it %}
+        <p>&nbsp;</p>
+        <h5>Voor de IT beheerder</h5>
+
+        <div class="row">
+            <!-- accounts activiteit -->
+            {% url 'Account:activiteit' as card_url %}
+            {% include 'plein/card.dtl' with title="Account activiteit" text="Toon overzicht van de recent gebruikte en aangemaakte accounts." icon="recent_actors" url=card_url %}
+
+            <!-- site feedback -->
+            {% url 'Overig:feedback-inzicht' as card_url %}
+            {% include 'plein/card.dtl' with title="Site feedback" text="Toon de feedback van de gebruikers." icon="feedback" url=card_url %}
+
+            <!-- logboek -->
+            {% url 'Logboek:alles' as card_url %}
+            {% include 'plein/card.dtl' with title="Logboek" text="Bekijk het logboek." icon="book" url=card_url %}
+
+            <!-- admin site -->
+            {% url 'admin:index' as card_url %}
+            {% include 'plein/card.dtl' with title="Admin site" text="Ga naar de admin site." icon="build" url=card_url %}
+
+            <!-- login-as -->
+            {% url 'Account:account-wissel' as card_url %}
+            {% include 'plein/card.dtl' with title="Login As" text="Wissen naar een andere gebruiker." icon="people" url=card_url %}
+        </div>
+    {% endif %}
+
+{% endblock %}

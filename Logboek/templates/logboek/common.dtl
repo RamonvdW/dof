@@ -1,0 +1,60 @@
+{% comment %}
+                Copyright (c) 2020-2021 Ramon van der Winkel.
+                All rights reserved.
+                Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
+{% endcomment %}
+
+<h4>Logboek</h4>
+
+<p>Focus:</p>
+
+<form method="get" action="{{ filter_url }}">
+
+    <div class="row">
+        <div class="col s12 m6">
+            <a class="btn-dof-blauw margin-5 btn-small {% if filter == 'rest' %}disabled{% endif %}" href="{{ url_rest }}">Rest</a>
+            <span>&nbsp;</span>
+            <a class="btn-dof-blauw margin-5 btn-small {% if filter == 'accounts' %}disabled{% endif %}" href="{{ url_accounts }}">Accounts</a>
+            <span>&nbsp;</span>
+            <a class="btn-dof-blauw margin-5 btn-small {% if filter == 'rollen' %}disabled{% endif %}" href="{{ url_rollen }}">Rollen</a>
+            <span>&nbsp;</span>
+            <a class="btn-dof-blauw margin-5 btn-small {% if filter == 'uitrol' %}disabled{% endif %}" href="{{ url_uitrol }}">Uitrol</a>
+        </div>
+        <div class="col s12 hide-on-med-and-up">
+            <br> <!-- spacing to input form -->
+        </div>
+        <div class="col s12 m6 white">
+            <div class="input-text" style="margin-left: 20px">
+                <span>Filter/zoek op:</span>
+                <input type="text" name="zoekterm" value="{{ zoekterm }}">
+            </div>
+
+            <p class="center-align">
+                <button class="btn-dof-blauw" type="submit"><i class="material-icons-round left">search</i>Zoek</button>
+                {% if unfiltered_url %}
+                    <span>&nbsp;&nbsp;</span><a class="btn-dof-blauw" href="{{ unfiltered_url }}"><i class="material-icons-round left">backspace</i>Leeg maken</a>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</form>
+
+{% if is_paginated %}
+    <ul class="pagination">
+        {% for linkname, url in page_links %}
+            {% if linkname == active %}
+                <li class="active"><a href="{{ url }}">{{ linkname }}</a></li>
+            {% elif linkname == "vorige_disable" %}
+                <li class="disabled"><a href="#!"><i class="material-icons-round">chevron_left</i></a></li>
+            {% elif linkname == "vorige" %}
+                <li class="waves-effect"><a href="{{ url }}"><i class="material-icons-round">chevron_left</i></a></li>
+            {% elif linkname == "volgende" %}
+                <li class="waves-effect"><a href="{{ url }}"><i class="material-icons-round">chevron_right</i></a></li>
+            {% elif linkname == "volgende_disable" %}
+                <li class="disabled"><a href="#!"><i class="material-icons-round">chevron_right</i></a></li>
+            {% else %}
+                <li class="waves-effect"><a href="{{ url }}">{{ linkname }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endif %}

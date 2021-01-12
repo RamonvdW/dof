@@ -1,0 +1,22 @@
+
+// Copyright (c) 2020 Ramon van der Winkel.
+// All rights reserved.
+// Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
+
+// Specific classes for our website
+
+$dof-blauw-color: #0aa0e1 !default;
+$dof-rood-color:  #f94137 !default;
+$nhb-donkerblauw-color: #03628c !default;
+
+$dof-blauw-focus: lighten($dof-blauw-color, 5%) !default;
+$dof-blauw-default: $dof-blauw-color !default;
+$dof-blauw-hover: darken($dof-blauw-color, 10%) !default;
+
+$dof-rood-focus: lighten($dof-rood-color, 5%) !default;
+$dof-rood-default: $dof-rood-color !default;
+$dof-rood-hover: darken($dof-rood-color, 25%) !default;
+
+$dof-collection-hover-background: #f5f5f5;
+
+// end of file

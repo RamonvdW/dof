@@ -1,0 +1,97 @@
+{% extends 'plein/site_layout.dtl' %}
+{% comment %}
+                Copyright (c) 2021 Ramon van der Winkel.
+                All rights reserved.
+                Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
+{% endcomment %}
+{% load static %}
+
+{% block title %}Wijzig product{% endblock %}
+
+{% block pagina %}
+
+    <h4>Wijzig product</h4>
+
+    <p>Op deze pagina kan je de definitie van jouw digitale product aanpassen.</p>
+    <p>Deze definitie wordt gebruikt om een bestelling te koppelen aan de juiste product(en).</p>
+
+    <form method="post" action="{{ url_opslaan }}">
+        {% csrf_token %}
+
+        <table class="white">
+            <tr>
+                <td>Korte beschrijving:</td>
+                <td><input type="text" name="kort" maxlength="100" value="{{ product.korte_beschrijving }}" required></td>
+            </tr>
+
+            <tr>
+                <td>Mag het product automatisch uitgestuurd worden?</td>
+                <td>
+                    <ul>
+                        <li>
+                            <label class="black-text" for="id_radio_1">
+                                <input class="with-gap" type="radio" name="bevinding" value="1" required id="id_radio_1"{% if check_1 %} checked{% endif %}>
+                                <span>Ja</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label class="black-text" for="id_radio_2">
+                                <input class="with-gap" type="radio" name="bevinding" value="2" required id="id_radio_2"{% if check_2 %} checked{% endif %}>
+                                <span>Nee (ik wil deze handmatig goedkeuren)</span>
+                            </label>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+
+            <tr>
+                <td rowspan="5">Specifieke teksten waarop dit product gekozen moet worden:<br><br>
+                <span>(maar 1 van deze teksten hoeft gevonden te worden)</span></td>
+                <td><input type="text" name="match1" maxlength="100" value="{{ product.match_1 }}"></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="match2" maxlength="100" value="{{ product.match_2 }}"></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="match3" maxlength="100" value="{{ product.match_3 }}"></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="match4" maxlength="100" value="{{ product.match_4 }}"></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="match5" maxlength="100" value="{{ product.match_5 }}"></td>
+            </tr>
+        </table>
+
+        <!-- terug / opslaan knoppen -->
+        <p>
+            <a class="btn-dof-blauw" href="{{ url_terug }}">
+                <i class="material-icons-round left">close</i>Terug</a>
+
+            <span>&nbsp;&nbsp;</span>
+
+            <button class="btn-dof-rood" type="submit">
+                <i class="material-icons-round left">check</i>Opslaan</button>
+        </p>
+
+    </form>
+
+    <p>&nbsp;</p>
+    <form method="post" action="{{ url_verwijderen }}">
+        {% csrf_token %}
+        <input text="text" name="delete" value="ja" hidden>
+        <ul class="collapsible">
+            <li>
+                <div class="collapsible-header white">
+                    <span>Klik eerst hier als je dit product wilt verwijderen</span>
+                </div>
+                <div class="collapsible-body white">
+                    <p>Heb dit product echt niet meer nodig?</p>
+                    <button class="btn-dof-rood" type="submit">
+                        <i class="material-icons-round left">delete</i>Verwijder dit product</button>
+                </div>
+            </li>
+        </ul>
+    </form>
+
+{% endblock %}
