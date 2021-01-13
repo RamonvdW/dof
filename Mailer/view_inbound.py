@@ -6,6 +6,7 @@
 
 from django.views import View
 from django.http import HttpResponse
+from .models import Inbox
 import logging
 import json
 
@@ -25,26 +26,10 @@ class ReceiverWebhookView(View):
         """ deze functie handelt het http-post verzoek af
             als de gebruiker op de Verstuur knop drukt krijgt deze functie de ingevoerde data.
         """
-        my_logger.info('ReceiverWebhook: request.body=%s' % repr(request.body))
 
-        try:
-            data = json.loads(request.body[:MAX_POST_SIZE])        # afkappen voor veiligheid
-        except json.JSONDecodeError:
-            my_logger.warn('json decode error')
-            pass
-        else:
-            my_logger.info('json data: %s' % json.dumps(data))
-
-            try:
-                print('From: %s' % data['From'])
-                print('MessageStream: %s' % data['MessageStream'])
-                print('FromName: %s' % data['FromName'])
-                print('Date: %s' % data['Date'])
-                print('Subject: %s' % data['Subject'])
-                print('TextBody: %s' % data['TextBody'])
-                print('HtmlBody: %s' % data['HtmlBody'])
-            except KeyError:
-                pass
+        # sla het bericht meteen op in de database
+        # TODO: voorkom dat de database overstroomd wordt met garbage?
+        Inbox(mail_text=request.body[:MAX_POST_SIZE]).save()       # afkappen voor de veiligheid
 
         return HttpResponse('OK')
 

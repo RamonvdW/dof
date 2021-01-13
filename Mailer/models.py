@@ -9,8 +9,33 @@ from django.conf import settings
 from django.utils import timezone
 
 
+class Inbox(models.Model):
+    """ Database tabel om ontvangen e-mails in op te slaan """
+
+    # wanneer aangemaakt
+    aangemaakt_op = models.DateTimeField(auto_now_add=True)      # automatisch invullen
+
+    is_verwerkt = models.BooleanField(default=False)
+
+    # het volledige ontvangen bericht also JSON data
+    mail_text = models.TextField()
+
+    def __str__(self):
+        msg = "[%s] lengte: %s, is_verwerkt: %s" % (
+                    self.aangemaakt_op.strftime('%Y-%m-%d %H:%M utc'),
+                    len(self.mail_text),
+                    self.is_verwerkt)
+        return msg
+
+    class Meta:
+        """ meta data voor de admin interface """
+        verbose_name = verbose_name_plural = "Mail inbox"
+
+    objects = models.Manager()      # for the editor only
+
+
 class MailQueue(models.Model):
-    """ Database tabel waarin de te versturen emails staan """
+    """ Database tabel waarin de te versturen e-mails staan """
 
     toegevoegd_op = models.DateTimeField()
     is_verstuurd = models.BooleanField()
