@@ -25,6 +25,7 @@ urlpatterns = [
     path('overig/',      include('Overig.urls')),
     path('plein/',       include('Plein.urls')),
     path('dof/',         include('Producten.urls')),
+    path('email/',       include('Mailer.urls')),
 ]
 
 if settings.DEBUG:          # pragma: no cover
