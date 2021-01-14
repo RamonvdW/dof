@@ -11,7 +11,7 @@ from .models import Product, Opdracht, Levering
 class ProductAdmin(admin.ModelAdmin):
 
     # velden om in te zoeken (in de lijst)
-    search_fields = ('korte_beschrijving', )
+    search_fields = ('korte_beschrijving',)
 
     list_filter = ('eigenaar__username',)
 

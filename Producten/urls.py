@@ -5,7 +5,7 @@
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
 from django.urls import path
-from . import view_producten  #, view_opdrachten, view_leveringen
+from . import view_producten, view_opdrachten #, view_leveringen
 
 app_name = 'Producten'
 
@@ -23,9 +23,21 @@ urlpatterns = [
          view_producten.WijzigProductView.as_view(),
          name='wijzig-product'),
 
-    #path('opdrachten/',
-    #     view_opdrachten.OpdrachtenView.as_view(),
-    #     name='opdrachten'),
+    path('opdrachten/',
+         view_opdrachten.OpdrachtenView.as_view(),
+         name='opdrachten'),
+
+    path('opdrachten/<opdracht_pk>/bekijk/',
+         view_opdrachten.OpdrachtDetailsView.as_view(),
+         name='bekijk-opdracht'),
+
+    path('opdrachten/<opdracht_pk>/opnieuw-analyseren/',
+         view_opdrachten.OpdrachtOpnieuwAnalyserenView.as_view(),
+         name='opnieuw-analyseren'),
+
+    path('opdrachten/<opdracht_pk>/vrijgeven/',
+         view_opdrachten.OpdrachtVrijgevenView.as_view(),
+         name='opdracht-vrijgeven'),
 
     #path('leveringen/',
     #     view_leveringen.LeveringenView.as_view(),

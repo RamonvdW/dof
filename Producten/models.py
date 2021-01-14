@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-#  Copyright (c) 2019-2020 Ramon van der Winkel.
+#  Copyright (c) 2019-2021 Ramon van der Winkel.
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
 from django.db import models
 from Account.models import Account
+from Mailer.models import Inbox
 
 
 class Product(models.Model):
@@ -16,10 +17,10 @@ class Product(models.Model):
     eigenaar = models.ForeignKey(Account, on_delete=models.CASCADE)
 
     # voor in de lijst
-    korte_beschrijving = models.CharField(max_length=100, default='')
+    korte_beschrijving = models.CharField(max_length=100, default='', blank=True)
 
     # naam van het bestand (niet het pad, alleen de naam)
-    naam_bestand = models.CharField(max_length=100, default='')
+    naam_bestand = models.CharField(max_length=100, default='', blank=True)
 
     # wanneer aangemaakt
     aangemaakt_op = models.DateTimeField(auto_now_add=True)      # automatisch invullen
@@ -28,21 +29,31 @@ class Product(models.Model):
     handmatig_vrijgeven = models.BooleanField(default=False)
 
     # strings waarop dit product kunnen matchen in de order fulfillment e-mail
-    match_1 = models.CharField(max_length=100, default='')
-    match_2 = models.CharField(max_length=100, default='')
-    match_3 = models.CharField(max_length=100, default='')
-    match_4 = models.CharField(max_length=100, default='')
-    match_5 = models.CharField(max_length=100, default='')
-    match_6 = models.CharField(max_length=100, default='')
-    match_7 = models.CharField(max_length=100, default='')
-    match_8 = models.CharField(max_length=100, default='')
-    match_9 = models.CharField(max_length=100, default='')
+    match_1 = models.CharField(max_length=100, default='', blank=True)
+    match_2 = models.CharField(max_length=100, default='', blank=True)
+    match_3 = models.CharField(max_length=100, default='', blank=True)
+    match_4 = models.CharField(max_length=100, default='', blank=True)
+    match_5 = models.CharField(max_length=100, default='', blank=True)
+    match_6 = models.CharField(max_length=100, default='', blank=True)
+    match_7 = models.CharField(max_length=100, default='', blank=True)
+    match_8 = models.CharField(max_length=100, default='', blank=True)
+    match_9 = models.CharField(max_length=100, default='', blank=True)
 
     # TODO: log toevoegen?
 
     def __str__(self):
         """ Lever een tekstuele beschrijving van een database record, voor de admin interface """
         return "Product '%s' (van %s)" % (self.korte_beschrijving, self.eigenaar.username)
+
+    def is_match(self, lines):
+        for match in (self.match_1, self.match_2, self.match_3, self.match_4, self.match_5):
+            if len(match) > 0:
+                for line in lines:
+                    if line.find(match) >= 0:
+                        return True
+                # for
+        # for
+        return False
 
     class Meta:
         """ meta data voor de admin interface """
@@ -69,13 +80,16 @@ class Opdracht(models.Model):
     mail_body = models.TextField()
 
     # gekoppelde producten
-    producten = models.ManyToManyField(Product)
+    producten = models.ManyToManyField(Product, blank=True)
 
     # vrijgegeven voor levering?
     is_vrijgegeven_voor_levering = models.BooleanField(default=False)
 
     # afgehandeld?
     is_afgehandeld = models.BooleanField(default=False)
+
+    # gemaakt uit welke binnenkomende mail?
+    bron = models.ForeignKey(Inbox, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         """ Lever een tekstuele beschrijving van een database record, voor de admin interface """
@@ -89,6 +103,8 @@ class Opdracht(models.Model):
                 msg += ' (vrijgegeven, nog niet afgehandeld)'
             else:
                 msg += ' (nog niet vrijgegeven)'
+
+        return msg
 
     class Meta:
         """ meta data voor de admin interface """

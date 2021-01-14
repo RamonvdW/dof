@@ -10,10 +10,10 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.models import F
-from django.utils.encoding import force_text
+from Account.models import Account
 from Mailer.models import Inbox
 from Overig.background_sync import BackgroundSync
-from Producten.models import Opdracht
+from Producten.models import Product, Opdracht
 import django.db.utils
 import datetime
 import logging
@@ -39,10 +39,69 @@ class Command(BaseCommand):
                             help="Aantal minuten actief blijven")
         parser.add_argument('--quick', action='store_true')     # for testing
 
-    @staticmethod
-    def _verwerk_mail_body(body):
+    def _maak_opdracht(self, inbox, items, lines):
         # TODO: sanity-check dat dit van de webshop komt
 
+        try:
+            email = items['E-mail']
+            naam = items['Naam']
+        except KeyError:
+            my_logger.error('Inbox pk=%s heeft niet alle benodigde items' % inbox.pk)
+            return False        # faal
+
+        try:
+            opdracht = Opdracht.objects.get(bron=inbox)
+        except Opdracht.DoesNotExist:
+            # maak een nieuwe opdracht aan
+            opdracht = Opdracht()
+            opdracht.bron = inbox
+            print('nieuwe opdracht')
+        else:
+            # hergebruik de opdracht (voorkom duplicates)
+            print('recycle opdracht')
+            opdracht.producten.clear()
+
+        opdracht.eigenaar = Account.objects.get(username=settings.DEFAULT_EIGENAAR)
+        opdracht.to_email = email
+        opdracht.save()
+
+        prod_links = ''
+        # zoek matchende producten
+        for prod in Product.objects.filter(eigenaar=opdracht.eigenaar):
+            if prod.is_match(lines):
+                opdracht.producten.add(prod)
+
+                # TODO: download url genereren naar Levering
+                url = settings.SITE_URL + '/download/tbd'
+                prod_links += '%s: %s\n' % (prod.korte_beschrijving, url)
+
+                if prod.handmatig_vrijgeven:
+                    opdracht.is_vrijgegeven_voor_levering = False
+        # for
+
+        if prod_links == '':
+            # geen producten kunnen matchen
+            opdracht.is_vrijgegeven_voor_levering = False
+            my_logger.error('Opdracht pk=%s niet kunnen koppelen aan een product' % opdracht.pk)
+            opdracht.save()
+            return False        # faal
+
+        # TODO: eigenaar zelf een bericht laten maken
+        msg = 'Hallo!\n\nBedankt voor je aankoop, %s.\n' % naam
+        msg += 'Hieronder volgen de links om de product(en) te downloaden.\n\n'
+        msg += prod_links
+        msg += '\nHet webshop team\n'
+        opdracht.mail_body = msg
+        opdracht.save()
+
+        if opdracht.is_vrijgegeven_voor_levering:
+            # TODO: ping taak voor verwerken van de opdracht (indien niet handmatig)
+            pass
+
+        # success
+        return True
+
+    def _verwerk_mail_body(self, inbox, body):
         # in de body zit een vrij tekstveld waar we niet per ongeluk op willen matchen
         # daar achter staat niets nuttigs meer, dus kap daar op af
         pos = body.find('Eventuele opmerkingen')
@@ -53,29 +112,44 @@ class Command(BaseCommand):
         # opsplitsen en deze newlines dumpen
         lines = body.splitlines()
 
-        for line in lines:
-            print(line)
+        # delete empty lines
+        lines = [line for line in lines if len(line) > 0]
+
+        # in de body vinden we key-value pairs op aparte regels
+        # de keys eindigen op een dubbele punt
+        items = dict()
+        line_nr = 0
+        while line_nr < len(lines):
+            line = lines[line_nr]
+            if line[-1] == ':' and line_nr+1 < len(lines):
+                key = line[:-1] # verwijder de dubbele punt
+                value = lines[line_nr + 1]
+                line_nr += 2
+
+                if key in items:
+                    my_logger.error('Inbox pk=%s geeft onverwacht een dupe item' % (inbox.pk, repr(key)))
+                else:
+                    items[key] = value
+            else:
+                line_nr += 1
+        # while
+
+        return self._maak_opdracht(inbox, items, lines)
 
     def _verwerk_ontvangen_mails(self):
-        print('_verwerk_ontvangen_mails')
         for obj in Inbox.objects.filter(is_verwerkt=False):
-            print('verwerk inbox %s' % obj.pk)
             try:
                 data = json.loads(obj.mail_text)
             except json.JSONDecodeError:
                 my_logger.error('Inbox pk=%s heeft geen valide json body' % obj.pk)
                 obj.is_verwerkt = True
-                #obj.save()
+                obj.save()
             else:
                 # haal de plain-text uit de mail en ignore de rest
                 body = data['TextBody']
-
-                print('body gevonden: lengte=%s' % len(body))
-
-                self._verwerk_mail_body(body)
-
-                obj.is_verwerkt = True
-                #obj.save()
+                if self._verwerk_mail_body(obj, body):
+                    obj.is_verwerkt = True
+                    obj.save()
         # for
 
     def _monitor_nieuwe_mutaties(self):
@@ -84,11 +158,7 @@ class Command(BaseCommand):
         now = datetime.datetime.now()
         while now < self.stop_at:                   # pragma: no branch
             # self.stdout.write('tick')
-            new_count = Inbox.objects.count()
-            if new_count != prev_count:
-                prev_count = new_count
-                self._verwerk_ontvangen_mails()
-                now = datetime.datetime.now()
+            self._verwerk_ontvangen_mails()
 
             # wacht 5 seconden voordat we opnieuw in de database kijken
             # het wachten kan onderbroken worden door een ping, als er een nieuwe mutatie toegevoegd is

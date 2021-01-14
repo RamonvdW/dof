@@ -1,0 +1,139 @@
+{% extends 'plein/site_layout.dtl' %}
+{% comment %}
+                Copyright (c) 2021 Ramon van der Winkel.
+                All rights reserved.
+                Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
+{% endcomment %}
+{% load static %}
+
+{% block title %}Opdracht details{% endblock %}
+
+{% block pagina %}
+
+    {% include 'overig/site-feedback-sidebar.dtl' with op_pagina="opdracht-details" %}
+
+    <h4>Opdracht details</h4>
+
+    <p>Op deze pagina tonen we de opdrachten die gemaakt zijn voor elk van de webshop e-mails.</p>
+
+    <a class="btn-dof-blauw" href="{{ url_terug }}">Terug</a>
+
+    <h5>Opdracht</h5>
+
+    <table class="white">
+        <tr>
+            <td>Naar e-mail:</td>
+            <td>{{ opdracht.to_email }}</td>
+            {% if url_vrijgeven %}
+                <td></td>
+            {% endif %}
+        </tr>
+
+        <tr>
+            <td>Geselecteerde producten:</td>
+            <td colspan="2">
+                {% for prod in opdracht.producten.all %}
+                    <span>{{ prod.korte_beschrijving }}</span><br>
+                {% endfor %}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Bericht:</td>
+            <td colspan="2">{{ opdracht.mail_body|linebreaks }}</td>
+        </tr>
+
+        <tr>
+            <td>Status:</td>
+            <td>
+                {% if opdracht.is_afgehandled %}
+                    <span>Afgehandeld</span>
+                {% elif opdracht.is_vrijgegeven_voor_levering %}
+                    <span>Klaar voor digitale levering</span>
+                {% else %}
+                    <span>Wacht op vrijgave</span>
+                {% endif %}
+            </td>
+
+            <td>
+                {% if url_vrijgeven %}
+                    <form action="{{ url_vrijgeven }}" method="post">
+                        {% csrf_token %}
+                        <button class="btn-dof-rood" type="submit">
+                            <i class="material-icons-round left">check</i>Nu vrijgeven</button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    {% if url_opnieuw_analyseren %}
+        <p>Als de gekoppelde producten niet overeenkomen met de bestelling, pas dan de definitie van de producten aan (de teksten waarop gematcht wordt) en laat deze opdracht opnieuw analyseren.</p>
+        <p>
+            <form action="{{ url_opnieuw_analyseren }}" method="post">
+                {% csrf_token %}
+                <button class="btn-dof-rood" type="submit">
+                    <i class="material-icons-round left">replay</i>Opnieuw analyseren</button>
+            </form>
+        </p>
+    {% endif %}
+
+    <p>&nbsp;</p>
+    <h5>Ontvangen opdracht e-mail</h5>
+    <table class="white">
+        <tr>
+            {% if inbox_error %}
+                <td class="red-text">{{ inbox_error }}</td>
+            {% else %}
+                <td>
+                {% for line in inbox_body %}
+                    <span>{{ line }}</span><br>
+                {% endfor %}
+                </td>
+            {% endif %}
+        </tr>
+    </table>
+
+    <table class="white">
+        <thead>
+            <tr>
+                <th>Wanneer</th>
+                <th>Status</th>
+                <th>Producten</th>
+                <th><!-- kolom voor knoppen --></th>
+            </tr>
+        </thead>
+
+        {% for obj in object_list %}
+            <tr>
+                <td>{{ obj.aangemaakt_op }}</td>
+
+                <td>
+                    {% if is_afgehandled %}
+                        <span>Afgehandeld</span>
+                    {% elif is_vrijgegeven_voor_levering %}
+                        <span>Klaar voor levering</span>
+                    {% else %}
+                        <span>Wacht op vrijgave</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% for prod in obj.producten.all %}
+                        <span>{{ prod.korte_beschrijving }}</span><br>
+                    {% endfor %}
+                </td>
+
+                <td>
+                    <a class="btn-dof-blauw" href="{{ obj.url_bekijk }}">Bekijk</a>
+                </td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+    <p>
+        <a class="btn-dof-blauw" href="{{ url_terug }}">Terug</a>
+    </p>
+
+{% endblock %}

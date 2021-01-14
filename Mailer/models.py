@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#  Copyright (c) 2020 Ramon van der Winkel.
+#  Copyright (c) 2020-2021 Ramon van der Winkel.
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
@@ -21,10 +21,13 @@ class Inbox(models.Model):
     mail_text = models.TextField()
 
     def __str__(self):
-        msg = "[%s] lengte: %s, is_verwerkt: %s" % (
+        msg = "[%s] lengte: %s" % (
                     self.aangemaakt_op.strftime('%Y-%m-%d %H:%M utc'),
-                    len(self.mail_text),
-                    self.is_verwerkt)
+                    len(self.mail_text))
+        if self.is_verwerkt:
+            msg += ' [is verwerkt]'
+        else:
+            msg += ' [nog niet verwerkt]'
         return msg
 
     class Meta:
