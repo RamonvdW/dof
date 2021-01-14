@@ -10,7 +10,7 @@
 
 {% block pagina %}
 
-    <h4>Hallo!</h4>
+    <h4>Hallo, {{ first_name }}!</h4>
 
     <p>Op deze pagina kan je je producten beheren.</p>
 
@@ -34,6 +34,11 @@
         <a class="btn-dof-blauw" href="{% url 'Account:nieuw-wachtwoord' %}" >
             <i class="material-icons-round left">https</i>Wachtwoord wijzigen</a>
 
+        {% if toon_koppel_2fa %}
+            <span>&nbsp;&nbsp;&nbsp;</span>
+            <a class="btn-dof-blauw" href="{% url 'Functie:otp-koppelen' %}" >
+                <i class="material-icons-round left">https</i>2FA aanzetten</a>
+        {% endif %}
     </p>
 
     <p>Voorstellen en feedback over deze site graag via de drie gekleurde smileys die op elke pagina te vinden zijn.</p>

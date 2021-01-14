@@ -4,11 +4,15 @@
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
-from django.shortcuts import redirect, render
-from django.views.generic import TemplateView, View
+from django.shortcuts import redirect, render, reverse
+from django.http import HttpResponseRedirect
+from django.views.generic import View
+from Account.rechten import account_rechten_is_otp_verified
+
 
 TEMPLATE_PLEIN_BEZOEKER = 'plein/plein-bezoeker.dtl'    # niet ingelogd
-TEMPLATE_PLEIN_BEHEERDER = 'plein/plein-beheerder.dtl'  # beheerder (IT/CM)
+TEMPLATE_PLEIN_2FA = 'plein/plein-2fa.dtl'              # 2FA controle na inlog
+TEMPLATE_PLEIN_BEHEERDER = 'plein/plein-beheerder.dtl'  # beheerder
 TEMPLATE_NIET_ONDERSTEUND = 'plein/niet-ondersteund.dtl'
 
 
@@ -65,6 +69,16 @@ class PleinView(View):
         context = dict()
 
         if request.user.is_authenticated:
+            account = request.user
+            context['first_name'] = account.get_first_name()
+
+            if account.otp_is_actief:
+                if not account_rechten_is_otp_verified(request):
+                    # eerste 2FA controle afdwingen
+                    return HttpResponseRedirect(reverse('Functie:otp-controle'))
+            else:
+                context['toon_koppel_2fa'] = True
+
             # beheerder
             template = TEMPLATE_PLEIN_BEHEERDER
 
