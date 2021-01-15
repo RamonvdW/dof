@@ -34,12 +34,14 @@
             <td colspan="2">
                 {% for prod in opdracht.producten.all %}
                     <span>{{ prod.korte_beschrijving }}</span><br>
+                {% empty %}
+                    <span class="red-text">Geen!!</span>
                 {% endfor %}
             </td>
         </tr>
 
         <tr>
-            <td>Bericht:</td>
+            <td>Gemaakt bericht:</td>
             <td colspan="2">{{ opdracht.mail_body|linebreaks }}</td>
         </tr>
 
@@ -59,7 +61,7 @@
                 {% if url_vrijgeven %}
                     <form action="{{ url_vrijgeven }}" method="post">
                         {% csrf_token %}
-                        <button class="btn-dof-rood" type="submit">
+                        <button class="btn-dof-rood" type="submit"{% if is_staff %} disabled{% endif %}>
                             <i class="material-icons-round left">check</i>Nu vrijgeven</button>
                     </form>
                 {% endif %}

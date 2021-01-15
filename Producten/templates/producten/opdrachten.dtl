@@ -43,6 +43,7 @@
     <table class="white">
         <thead>
             <tr>
+                {% if is_staff %}<th>Eigenaar</th>{% endif %}
                 <th>Wanneer</th>
                 <th>Status</th>
                 <th>Producten</th>
@@ -52,6 +53,7 @@
 
         {% for obj in object_list %}
             <tr>
+                {% if is_staff %}<td>{{ obj.eigenaar.get_first_name }}</td>{% endif %}
                 <td>{{ obj.aangemaakt_op }}</td>
 
                 <td>
@@ -67,6 +69,8 @@
                 <td>
                     {% for prod in obj.producten.all %}
                         <span>{{ prod.korte_beschrijving }}</span><br>
+                    {% empty %}
+                        <span class="red-text">Geen!</span>
                     {% endfor %}
                 </td>
 

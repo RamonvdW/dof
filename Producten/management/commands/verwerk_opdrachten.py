@@ -55,10 +55,8 @@ class Command(BaseCommand):
             # maak een nieuwe opdracht aan
             opdracht = Opdracht()
             opdracht.bron = inbox
-            print('nieuwe opdracht')
         else:
             # hergebruik de opdracht (voorkom duplicates)
-            print('recycle opdracht')
             opdracht.producten.clear()
 
         opdracht.eigenaar = Account.objects.get(username=settings.DEFAULT_EIGENAAR)
@@ -107,6 +105,11 @@ class Command(BaseCommand):
         pos = body.find('Eventuele opmerkingen')
         if pos > 0:
             body = body[:pos + 21]
+
+        pos = body.find('een nieuwe bestelling met ordernummer')
+        if pos < 0:
+            my_logger.info('Inbox pk=%s is geen bestelling' % inbox.pk)
+            return True     # niet meer naar kijken
 
         # de body bestaat uit regels met tekst met 'foute' newlines
         # opsplitsen en deze newlines dumpen

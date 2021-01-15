@@ -18,7 +18,7 @@
 
     <form action="{% url 'Producten:nieuw-product' %}" method="post">
         {% csrf_token %}
-        <p>Een nieuw product toevoegen kan met deze knop: <button class="btn-dof-blauw" type="submit">
+        <p>Een nieuw product toevoegen kan met deze knop: <button class="btn-dof-blauw" type="submit"{% if is_staff %} disabled{% endif %}>
             <i class="material-icons-round left">add</i>Toevoegen</button>
         </p>
     </form>
@@ -46,6 +46,7 @@
     <table class="white">
         <thead>
             <tr>
+                {% if is_staff %}<th>Eigenaar</th>{% endif %}
                 <th>Product</th>
                 <th><!-- kolom voor knoppen --></th>
             </tr>
@@ -53,6 +54,7 @@
 
         {% for obj in object_list %}
             <tr>
+                {% if is_staff %}<td>{{ obj.eigenaar.get_first_name }}</td>{% endif %}
                 <td>{{ obj.korte_beschrijving }}</td>
                 <td>
                     <a class="btn-dof-blauw" href="{{ obj.url_wijzig }}">Wijzig</a>
@@ -65,5 +67,7 @@
     <p>
         <a class="btn-dof-blauw" href="{% url 'Plein:plein' %}">Sluit dit scherm</a>
     </p>
+
+    {% include 'overig/site-feedback-sidebar.dtl' with op_pagina="producten" %}
 
 {% endblock %}

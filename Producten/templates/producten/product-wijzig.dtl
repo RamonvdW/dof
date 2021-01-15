@@ -70,7 +70,7 @@
 
             <span>&nbsp;&nbsp;</span>
 
-            <button class="btn-dof-rood" type="submit">
+            <button class="btn-dof-rood" type="submit"{% if is_staff %} disabled{% endif %}>
                 <i class="material-icons-round left">check</i>Opslaan</button>
         </p>
 
@@ -87,11 +87,13 @@
                 </div>
                 <div class="collapsible-body white">
                     <p>Heb dit product echt niet meer nodig?</p>
-                    <button class="btn-dof-rood" type="submit">
+                    <button class="btn-dof-rood" type="submit"{% if is_staff %} disabled{% endif %}>
                         <i class="material-icons-round left">delete</i>Verwijder dit product</button>
                 </div>
             </li>
         </ul>
     </form>
+
+    {% include 'overig/site-feedback-sidebar.dtl' with op_pagina="product-wijzig" %}
 
 {% endblock %}

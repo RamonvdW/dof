@@ -13,7 +13,7 @@ from .models import Product
 
 
 TEMPLATE_PRODUCTEN = 'producten/producten.dtl'
-TEMPLATE_WIJZIG_PRODUCT = 'producten/wijzig.dtl'
+TEMPLATE_WIJZIG_PRODUCT = 'producten/product-wijzig.dtl'
 
 
 class ProductenView(UserPassesTestMixin, ListView):
@@ -71,9 +71,15 @@ class ProductenView(UserPassesTestMixin, ListView):
         return links
 
     def get_queryset(self):
-        qset = (Product
-                .objects
-                .filter(eigenaar=self.request.user))
+        if self.request.user.is_staff:
+            qset = (Product
+                    .objects
+                    .order_by('-aangemaakt_op'))
+        else:
+            qset = (Product
+                    .objects
+                    .filter(eigenaar=self.request.user)
+                    .order_by('-aangemaakt_op'))
 
         for prod in qset:
             prod.url_wijzig = reverse('Producten:wijzig-product',
@@ -87,6 +93,9 @@ class ProductenView(UserPassesTestMixin, ListView):
         if context['is_paginated']:
             context['page_links'] = self._make_link_urls(context)
             context['active'] = str(context['page_obj'].number)
+
+        if self.request.user.is_staff:
+            context['is_staff'] = True
 
         return context
 
@@ -103,7 +112,8 @@ class NieuwProductView(UserPassesTestMixin, View):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
         return HttpResponseRedirect(reverse('Plein:plein'))
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         eigenaar = request.user
 
         product = Product(eigenaar=eigenaar)
@@ -134,9 +144,12 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
 
         try:
             product_pk = int(kwargs['product_pk'][:6])                  # afkappen voor veiligheid
-            product = Product.objects.get(pk=product_pk,
-                                          eigenaar=self.request.user)   # alleen eigen producten
-        except (ValueError, Product.DoesNotExit):
+            if self.request.user.is_staff:
+                product = Product.objects.get(pk=product_pk)
+            else:
+                product = Product.objects.get(pk=product_pk,
+                                              eigenaar=self.request.user)   # alleen eigen producten
+        except (ValueError, Product.DoesNotExist):
             raise Resolver404()
 
         context['product'] = product
@@ -151,6 +164,9 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
         context['url_opslaan'] = reverse('Producten:wijzig-product',
                                          kwargs={'product_pk': product.pk})
 
+        if self.request.user.is_staff:
+            context['is_staff'] = True
+
         return context
 
     def post(self, request, *args, **kwargs):
@@ -158,7 +174,7 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
             product_pk = int(kwargs['product_pk'][:6])                  # afkappen voor veiligheid
             product = Product.objects.get(pk=product_pk,
                                           eigenaar=self.request.user)   # alleen eigen producten
-        except (ValueError, Product.DoesNotExit):
+        except (ValueError, Product.DoesNotExist):
             raise Resolver404()
 
         delete = request.POST.get('delete', None)

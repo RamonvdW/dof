@@ -78,10 +78,15 @@ class OpdrachtenView(UserPassesTestMixin, ListView):
         return links
 
     def get_queryset(self):
-        qset = (Opdracht
-                .objects
-                .filter(eigenaar=self.request.user)
-                .order_by('-aangemaakt_op'))        # nieuwste bovenaan
+        if self.request.user.is_staff:
+            qset = (Opdracht
+                    .objects
+                    .order_by('-aangemaakt_op'))  # nieuwste bovenaan
+        else:
+            qset = (Opdracht
+                    .objects
+                    .filter(eigenaar=self.request.user)
+                    .order_by('-aangemaakt_op'))        # nieuwste bovenaan
 
         for obj in qset:
             obj.url_bekijk = reverse('Producten:bekijk-opdracht',
@@ -95,6 +100,9 @@ class OpdrachtenView(UserPassesTestMixin, ListView):
         if context['is_paginated']:
             context['page_links'] = self._make_link_urls(context)
             context['active'] = str(context['page_obj'].number)
+
+        if self.request.user.is_staff:
+            context['is_staff'] = True
 
         return context
 
@@ -117,14 +125,24 @@ class OpdrachtDetailsView(UserPassesTestMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        if self.request.user.is_staff:
+            context['is_staff'] = True
+
         try:
             opdracht_pk = int(kwargs['opdracht_pk'][:6])    # afkappen voor veiligheid
-            opdracht = (Opdracht
-                        .objects
-                        .select_related('bron')
-                        .get(pk=opdracht_pk,
-                             eigenaar=self.request.user))   # alleen eigen producten
-        except (ValueError, Opdracht.DoesNotExit):
+
+            if self.request.user.is_staff:
+                opdracht = (Opdracht
+                            .objects
+                            .select_related('bron')
+                            .get(pk=opdracht_pk))
+            else:
+                opdracht = (Opdracht
+                            .objects
+                            .select_related('bron')
+                            .get(pk=opdracht_pk,
+                                 eigenaar=self.request.user))  # alleen eigen producten
+        except (ValueError, Opdracht.DoesNotExist):
             raise Resolver404()
 
         context['opdracht'] = opdracht
@@ -169,17 +187,24 @@ class OpdrachtOpnieuwAnalyserenView(UserPassesTestMixin, View):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
         return HttpResponseRedirect(reverse('Plein:plein'))
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         eigenaar = request.user
 
         try:
             opdracht_pk = int(kwargs['opdracht_pk'][:6])    # afkappen voor veiligheid
-            opdracht = (Opdracht
-                        .objects
-                        .select_related('bron')
-                        .get(pk=opdracht_pk,
-                             eigenaar=eigenaar))            # alleen eigen producten
-        except (ValueError, Opdracht.DoesNotExit):
+            if request.user.is_staff:
+                opdracht = (Opdracht
+                            .objects
+                            .select_related('bron')
+                            .get(pk=opdracht_pk))
+            else:
+                opdracht = (Opdracht
+                            .objects
+                            .select_related('bron')
+                            .get(pk=opdracht_pk,
+                                 eigenaar=eigenaar))            # alleen eigen producten
+        except (ValueError, Opdracht.DoesNotExist):
             raise Resolver404()
 
         if opdracht.is_afgehandeld or opdracht.is_vrijgegeven_voor_levering:
@@ -199,7 +224,7 @@ class OpdrachtOpnieuwAnalyserenView(UserPassesTestMixin, View):
         while not inbox.is_verwerkt and total + interval <= 3.0:
             time.sleep(interval)
             total += interval  # 0.0 --> 0.2, 0.6, 1.4, 3.0, 6.2
-            interval *= 2  # 0.2 --> 0.4, 0.8, 1.6, 3.2
+            interval *= 2      # 0.2 --> 0.4, 0.8, 1.6, 3.2
             inbox = Inbox.objects.get(pk=inbox.pk)
         # while
 
