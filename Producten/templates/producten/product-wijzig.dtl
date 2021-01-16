@@ -25,6 +25,17 @@
             </tr>
 
             <tr>
+                <td>Welke taal gebruiken bij uitsturen?</td>
+                <td>
+                    <select name="taal">
+                        {% for taal in talen %}
+                            <option value="{{ taal.code }}"{% if taal.actief %} selected{% endif %}>{{ taal.taal }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
                 <td>Mag het product automatisch uitgestuurd worden?</td>
                 <td>
                     <ul>

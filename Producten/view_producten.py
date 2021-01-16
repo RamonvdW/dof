@@ -9,7 +9,8 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView, TemplateView, View
 from django.urls import Resolver404
 from django.http import HttpResponseRedirect
-from .models import Product
+from .models import Product, TALEN
+from types import SimpleNamespace
 
 
 TEMPLATE_PRODUCTEN = 'producten/producten.dtl'
@@ -84,6 +85,14 @@ class ProductenView(UserPassesTestMixin, ListView):
         for prod in qset:
             prod.url_wijzig = reverse('Producten:wijzig-product',
                                       kwargs={'product_pk': prod.pk})
+
+            prod.taal_lang = prod.taal
+            for code, taal_lang in TALEN:
+                if prod.taal == code:
+                    prod.taal_lang = taal_lang
+            # for
+        # for
+
         return qset
 
     def get_context_data(self, **kwargs):
@@ -139,6 +148,18 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
         return HttpResponseRedirect(reverse('Plein:plein'))
 
+    @staticmethod
+    def _get_talen(keuze):
+        talen = list()
+        for code, taal in TALEN:
+            optie = SimpleNamespace()
+            optie.code = code
+            optie.taal = taal
+            optie.actief = (keuze == optie.code)
+            talen.append(optie)
+        # for
+        return talen
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -164,6 +185,8 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
         context['url_opslaan'] = reverse('Producten:wijzig-product',
                                          kwargs={'product_pk': product.pk})
 
+        context['talen'] = self._get_talen(product.taal)
+
         if self.request.user.is_staff:
             context['is_staff'] = True
 
@@ -183,6 +206,16 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
         else:
             try:
                 product.korte_beschrijving = request.POST.get('kort', product.korte_beschrijving)[:100]
+
+                taal = request.POST.get('taal', '')
+                for code, _ in TALEN:
+                    if taal == code:
+                        product.taal = code
+                        taal = None
+                # for
+                if taal is not None:
+                    # illegal taal
+                    raise Resolver404()
 
                 product.match_1 = request.POST.get('match1', product.match_1)[:100]
                 product.match_2 = request.POST.get('match2', product.match_2)[:100]

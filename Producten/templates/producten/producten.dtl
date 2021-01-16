@@ -48,6 +48,7 @@
             <tr>
                 {% if is_staff %}<th>Eigenaar</th>{% endif %}
                 <th>Product</th>
+                <th>Taal</th>
                 <th><!-- kolom voor knoppen --></th>
             </tr>
         </thead>
@@ -56,6 +57,7 @@
             <tr>
                 {% if is_staff %}<td>{{ obj.eigenaar.get_first_name }}</td>{% endif %}
                 <td>{{ obj.korte_beschrijving }}</td>
+                <td>{{ obj.taal_lang }}</td>
                 <td>
                     <a class="btn-dof-blauw" href="{{ obj.url_wijzig }}">Wijzig</a>
                 </td>

@@ -5,11 +5,15 @@
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
 from django.urls import path
-from . import view_producten, view_opdrachten #, view_leveringen
+from . import view_producten, view_opdrachten #, view_leveringen, view_templates
 
 app_name = 'Producten'
 
 urlpatterns = [
+
+    #path('templates',
+    #     view_templates.TemplatesView.as_view(),
+    #     name='templates'),
 
     path('producten/',
          view_producten.ProductenView.as_view(),

@@ -9,6 +9,16 @@ from Account.models import Account
 from Mailer.models import Inbox
 
 
+TALEN = (
+    ('NL', 'Nederlands'),
+    ('EN', 'Engels'),
+    ('DU', 'Duits'),
+    ('FR', 'Frans'),
+    ('SE', 'Zweeds'),
+    ('TU', 'Turks'),
+)
+
+
 class Product(models.Model):
 
     """ definitie van een product """
@@ -18,6 +28,9 @@ class Product(models.Model):
 
     # voor in de lijst
     korte_beschrijving = models.CharField(max_length=100, default='', blank=True)
+
+    # in welke taal is dit bericht
+    taal = models.CharField(max_length=2, choices=TALEN, default=TALEN[0][0])
 
     # naam van het bestand (niet het pad, alleen de naam)
     naam_bestand = models.CharField(max_length=100, default='', blank=True)
@@ -75,6 +88,7 @@ class Opdracht(models.Model):
 
     # aan wie te leveren
     to_email = models.CharField(max_length=250, default='')
+    to_naam = models.CharField(max_length=100, default='')
 
     # de ontvangen mail body met de opdracht
     mail_body = models.TextField()
@@ -146,5 +160,28 @@ class Levering(models.Model):
         verbose_name_plural = "Leveringen"
 
     objects = models.Manager()      # for the editor only
+
+
+class BerichtTemplate(models.Model):
+
+    # van wie is de template
+    eigenaar = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+    # in welke taal is dit bericht
+    taal = models.CharField(max_length=2, choices=TALEN)
+
+    # intro
+    intro = models.TextField()
+
+    # outro
+    outro = models.TextField()
+
+    def __str__(self):
+        return "[%s] %s" % (self.eigenaar.get_first_name(), self.taal)
+
+    class Meta:
+        """ meta data voor de admin interface """
+        verbose_name = "Bericht template"
+
 
 # end of file

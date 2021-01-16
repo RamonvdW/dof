@@ -22,8 +22,8 @@
 
     <table class="white">
         <tr>
-            <td>Naar e-mail:</td>
-            <td>{{ opdracht.to_email }}</td>
+            <td>Klant naam:</td>
+            <td>{{ opdracht.to_naam }}</td>
             {% if url_vrijgeven %}
                 <td></td>
             {% endif %}
@@ -38,6 +38,14 @@
                     <span class="red-text">Geen!!</span>
                 {% endfor %}
             </td>
+        </tr>
+
+        <tr>
+            <td>Klant e-mail:</td>
+            <td>{{ opdracht.to_email }}</td>
+            {% if url_vrijgeven %}
+                <td></td>
+            {% endif %}
         </tr>
 
         <tr>

@@ -13,7 +13,7 @@ from django.db.models import F
 from Account.models import Account
 from Mailer.models import Inbox
 from Overig.background_sync import BackgroundSync
-from Producten.models import Product, Opdracht
+from Producten.models import Product, Opdracht, BerichtTemplate
 import django.db.utils
 import datetime
 import logging
@@ -29,7 +29,7 @@ class Command(BaseCommand):
     def __init__(self, stdout=None, stderr=None, no_color=False, force_color=False):
         super().__init__(stdout, stderr, no_color, force_color)
         self.stop_at = datetime.datetime.now()
-
+        self._verbose = False
         self._sync = BackgroundSync(settings.BACKGROUND_SYNC__VERWERK_OPDRACHTEN)
         self._count_ping = 0
 
@@ -46,6 +46,11 @@ class Command(BaseCommand):
             email = items['E-mail']
             naam = items['Naam']
         except KeyError:
+            if self._verbose:
+                self.stderr.write('[ERROR] Inbox pk=%s heeft niet alle benodigde items' % inbox.pk)
+                self.stderr.write('Dit zijn de items:')
+                for key, value in items.items():
+                    self.stderr.write('   %s / %s' % (key, value))
             my_logger.error('Inbox pk=%s heeft niet alle benodigde items' % inbox.pk)
             return False        # faal
 
@@ -61,13 +66,16 @@ class Command(BaseCommand):
 
         opdracht.eigenaar = Account.objects.get(username=settings.DEFAULT_EIGENAAR)
         opdracht.to_email = email
+        opdracht.to_naam = naam
         opdracht.save()
 
+        taal = ''
         prod_links = ''
         # zoek matchende producten
         for prod in Product.objects.filter(eigenaar=opdracht.eigenaar):
             if prod.is_match(lines):
                 opdracht.producten.add(prod)
+                taal = prod.taal
 
                 # TODO: download url genereren naar Levering
                 url = settings.SITE_URL + '/download/tbd'
@@ -84,11 +92,24 @@ class Command(BaseCommand):
             opdracht.save()
             return False        # faal
 
-        # TODO: eigenaar zelf een bericht laten maken
-        msg = 'Hallo!\n\nBedankt voor je aankoop, %s.\n' % naam
-        msg += 'Hieronder volgen de links om de product(en) te downloaden.\n\n'
-        msg += prod_links
-        msg += '\nHet webshop team\n'
+        try:
+            template = (BerichtTemplate
+                        .objects
+                        .get(eigenaar=opdracht.eigenaar,
+                             taal=taal))
+        except BerichtTemplate.DoesNotExist:
+            # geen template kunnen maken
+            opdracht.is_vrijgegeven_voor_levering = False
+            my_logger.error('Geen template voor taal %s en eigenaar %s' % (
+                                    repr(taal),
+                                    opdracht.eigenaar.get_first_name()))
+            opdracht.save()
+            return False
+
+        msg = template.intro
+        msg = msg.replace('%NAME%', opdracht.to_naam)
+        msg = msg.replace('%LINKS%', prod_links)
+
         opdracht.mail_body = msg
         opdracht.save()
 
@@ -111,6 +132,13 @@ class Command(BaseCommand):
             my_logger.info('Inbox pk=%s is geen bestelling' % inbox.pk)
             return True     # niet meer naar kijken
 
+        # remove garbage
+        body = body.replace('\xa0', '')
+        for field in ('Naam', 'E-mail', 'Telefoon', 'Straat', 'Postcode', 'Plaats', 'Land'):
+            body = body.replace(' %s: ' % field, '\n%s:\n' % field)
+            body = body.replace(' %s:' % field, '\n%s:' % field)
+        # for
+
         # de body bestaat uit regels met tekst met 'foute' newlines
         # opsplitsen en deze newlines dumpen
         lines = body.splitlines()
@@ -125,7 +153,7 @@ class Command(BaseCommand):
         while line_nr < len(lines):
             line = lines[line_nr]
             if line[-1] == ':' and line_nr+1 < len(lines):
-                key = line[:-1] # verwijder de dubbele punt
+                key = line[:-1]     # verwijder de dubbele punt
                 value = lines[line_nr + 1]
                 line_nr += 2
 
@@ -163,11 +191,12 @@ class Command(BaseCommand):
             # self.stdout.write('tick')
             self._verwerk_ontvangen_mails()
 
-            # wacht 5 seconden voordat we opnieuw in de database kijken
-            # het wachten kan onderbroken worden door een ping, als er een nieuwe mutatie toegevoegd is
+            # wacht 30 seconden voordat we opnieuw in de database kijken
+            # het wachten kan onderbroken worden door een ping,
+            # als er een nieuwe mail ontvangen is of opnieuw analyseren gevraagd is
             secs = (self.stop_at - now).total_seconds()
             if secs > 1:                                    # pragma: no branch
-                timeout = min(5.0, secs)
+                timeout = min(30.0, secs)
                 if self._sync.wait_for_ping(timeout):       # pragma: no branch
                     self._count_ping += 1                   # pragma: no cover
             else:
@@ -194,6 +223,11 @@ class Command(BaseCommand):
         self.stdout.write('[INFO] Taak loopt tot %s' % str(self.stop_at))
 
     def handle(self, *args, **options):
+
+        verbosity = int(options['verbosity'])
+        if verbosity > 0:
+            self._verbose = True
+
         self._set_stop_time(**options)
 
         # vang generieke fouten af
