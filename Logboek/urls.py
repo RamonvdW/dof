@@ -22,10 +22,6 @@ urlpatterns = [
          views.LogboekAccountsView.as_view(),
          name='accounts'),
 
-    path('rollen/',
-         views.LogboekRollenView.as_view(),
-         name='rollen'),
-
     path('uitrol/',
          views.LogboekUitrolView.as_view(),
          name='uitrol'),

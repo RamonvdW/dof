@@ -6,6 +6,10 @@
 
 <h4>Logboek</h4>
 
+<p>
+    <a class="btn-dof-blauw" href="{% url 'Plein:plein' %}">Terug</a>
+</p>
+
 <p>Focus:</p>
 
 <form method="get" action="{{ filter_url }}">
@@ -15,8 +19,6 @@
             <a class="btn-dof-blauw margin-5 btn-small {% if filter == 'rest' %}disabled{% endif %}" href="{{ url_rest }}">Rest</a>
             <span>&nbsp;</span>
             <a class="btn-dof-blauw margin-5 btn-small {% if filter == 'accounts' %}disabled{% endif %}" href="{{ url_accounts }}">Accounts</a>
-            <span>&nbsp;</span>
-            <a class="btn-dof-blauw margin-5 btn-small {% if filter == 'rollen' %}disabled{% endif %}" href="{{ url_rollen }}">Rollen</a>
             <span>&nbsp;</span>
             <a class="btn-dof-blauw margin-5 btn-small {% if filter == 'uitrol' %}disabled{% endif %}" href="{{ url_uitrol }}">Uitrol</a>
         </div>

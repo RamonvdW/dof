@@ -14,17 +14,27 @@
 
     <p>Op deze pagina kan je je producten beheren.</p>
 
-    <!-- producten beheren -->
-    {% url 'Producten:producten' as card_url %}
-    {% include 'plein/card.dtl' with title="Producten" text="Beheer de digitale producten die geleverd kunnen worden." icon="article" url=card_url %}
+    <div class="row">
+        <!-- producten beheren -->
+        {% url 'Producten:producten' as card_url %}
+        {% include 'plein/card.dtl' with title="Producten" text="Beheer de digitale producten die geleverd kunnen worden." icon="article" url=card_url %}
 
-    <!-- opdrachten -->
-    {% url 'Producten:opdrachten' as card_url %}
-    {% include 'plein/card.dtl' with title="Opdrachten" text="Bekijk de ontvangen opdrachten en geef producten vrij." icon="inbox" url=card_url %}
+        <!-- opdrachten -->
+        {% url 'Producten:opdrachten' as card_url %}
+        {% include 'plein/card.dtl' with title="Opdrachten" text="Bekijk de ontvangen opdrachten en geef producten vrij." icon="inbox" url=card_url %}
 
-    <!-- leveringsgeschiedenis en statistiek -->
-    {% url 'Producten:leveringen' as card_url %}
-    {% include 'plein/card.dtl' with title="Leveringen" text="Bekijk de leveringen die gedaan zijn." icon="analytics" url=card_url %}
+        <!-- leveringsgeschiedenis en statistiek -->
+        {% url 'Producten:leveringen' as card_url %}
+        {% include 'plein/card.dtl' with title="Leveringen" text="Bekijk de leveringen die gedaan zijn." icon="analytics" url=card_url %}
+    </div>
+
+    <!--
+    <div class="row">
+        <! -- templates -- >
+        {% url 'Producten:templates' as card_url %}
+        {% include 'plein/card.dtl' with title="Mail templates" text="Wijzig de berichten die in verschillende talen verstuurd worden voor aflevering." icon="mail_outline" url=card_url %}
+    </div>
+    -->
 
     <p>
         <a class="btn-dof-blauw" href="{% url 'Account:logout' %}" >
