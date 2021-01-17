@@ -7,14 +7,19 @@
 from django.shortcuts import reverse
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView, TemplateView, View
+from django import forms
 from django.urls import Resolver404
 from django.http import HttpResponseRedirect
-from .models import Product, TALEN
+from .models import Product, TALEN, get_path_to_product_bestand
 from types import SimpleNamespace
+import logging
+import os.path
 
 
 TEMPLATE_PRODUCTEN = 'producten/producten.dtl'
 TEMPLATE_WIJZIG_PRODUCT = 'producten/product-wijzig.dtl'
+
+my_logger = logging.getLogger('DOF.Producten')
 
 
 class ProductenView(UserPassesTestMixin, ListView):
@@ -60,6 +65,8 @@ class ProductenView(UserPassesTestMixin, ListView):
             tup = ('%s' % pgnr, self.base_url + '?page=%s' % pgnr)
             links.append(tup)
         # for
+
+        # TODO: zet self.base_url
 
         # next
         if page_nr < num_pages:
@@ -187,6 +194,14 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
 
         context['talen'] = self._get_talen(product.taal)
 
+        fpath, naam = get_path_to_product_bestand(product)
+        context['bestandsnaam'] = naam
+        if not os.path.exists(fpath):
+            context['niet_gevonden'] = True
+
+        context['url_upload'] = reverse('Producten:upload-bestand',
+                                        kwargs={'product_pk': product.pk})
+
         if self.request.user.is_staff:
             context['is_staff'] = True
 
@@ -224,15 +239,78 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
                 product.match_5 = request.POST.get('match5', product.match_5)[:100]
 
                 bevinding = request.POST.get('bevinding')
-                if bevinding == '1':
-                    product.handmatig_vrijgeven = True
-                if bevinding == '2':
-                    product.handmatig_vrijgeven = False
+                product.handmatig_vrijgeven = (bevinding == '2')
             except KeyError:
                 raise Resolver404()
 
             product.save()
 
         return HttpResponseRedirect(reverse('Producten:producten'))
+
+
+class UploadView(UserPassesTestMixin, View):
+
+    """ deze view ontvangt een file upload """
+
+    def test_func(self):
+        """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
+        return self.request.user.is_authenticated
+
+    def handle_no_permission(self):
+        """ gebruiker heeft geen toegang --> redirect naar het plein """
+        return HttpResponseRedirect(reverse('Producten:producten'))
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+
+        try:
+            product_pk = int(kwargs['product_pk'][:6])            # afkappen voor veiligheid
+            product = Product.objects.get(eigenaar=request.user,  # alleen eigen producten
+                                          pk=product_pk)
+        except Product.DoesNotExist:
+            raise Resolver404()
+
+        try:
+            uploaded_file = request.FILES['bestand']
+        except KeyError:
+            raise Resolver404()
+
+        old_fpath, _ = get_path_to_product_bestand(product)
+
+        product.naam_bestand = uploaded_file.name
+        fpath, _ = get_path_to_product_bestand(product)
+
+        # maak het pad aan, indien nog niet aanwezig
+        prod_dir = os.path.dirname(fpath)
+        try:
+            os.makedirs(prod_dir, exist_ok=True)
+        except OSError as exc:
+            my_logger.error('Aanmaken van directory %s voor product %s mislukt: %s' % (repr(prod_dir), product.pk, str(exc)))
+
+        # sla het bestand op
+        try:
+            with open(fpath, 'wb') as target:
+                for chunk in uploaded_file.chunks():
+                    target.write(chunk)
+                # for
+        except OSError as exc:
+            my_logger.error('Upload van %s voor product %s mislukt: %s' % (repr(fpath), product.pk, str(exc)))
+        else:
+            # upload gelukt
+            product.save()
+            my_logger.info('Upload van %s voor product %s gelukt' % (repr(fpath), product.pk))
+
+            # verwijder het oude bestand, indien aanwezig
+            if os.path.exists(old_fpath):
+                try:
+                    os.remove(old_fpath)
+                except OSError as exc:
+                    my_logger.error('Verwijderen van oude bestand %s voor product %s mislukt: %s' % (repr(old_fpath), product.pk, str(exc)))
+                else:
+                    my_logger.info('Verwijderen van oude bestand %s voor product %s gelukt' % (repr(old_fpath), product.pk))
+
+        # terug naar de wijzig-product pagina
+        url = reverse('Producten:wijzig-product', kwargs={'product_pk': product.pk})
+        return HttpResponseRedirect(url)
 
 # end of file

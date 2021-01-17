@@ -10,24 +10,42 @@
 
 {% block pagina %}
 
+    <script type="application/javascript">
+        function verander_upload_knop() {
+            const el = document.getElementById('upload_knop')
+            el.disabled = false
+        }
+    </script>
+
     <h4>Wijzig product</h4>
 
     <p>Op deze pagina kan je de definitie van jouw digitale product aanpassen.</p>
     <p>Deze definitie wordt gebruikt om een bestelling te koppelen aan de juiste product(en).</p>
 
-    <form method="post" action="{{ url_opslaan }}">
+    <p>
+        <a class="btn-dof-blauw" href="{{ url_terug }}">
+            <i class="material-icons-round left">close</i>Terug</a>
+    </p>
+
+    <form method="post" action="{{ url_upload }}" id="upload-form" enctype="multipart/form-data">
+        {% csrf_token %}
+    </form>
+
+    <form method="post" action="{{ url_opslaan }}" id="edit-form">
         {% csrf_token %}
 
         <table class="white">
             <tr>
                 <td>Korte beschrijving:</td>
-                <td><input type="text" name="kort" maxlength="100" value="{{ product.korte_beschrijving }}" required></td>
+                <td>
+                    <input form="edit-form" type="text" name="kort" maxlength="100" value="{{ product.korte_beschrijving }}" required>
+                </td>
             </tr>
 
             <tr>
                 <td>Welke taal gebruiken bij uitsturen?</td>
                 <td>
-                    <select name="taal">
+                    <select form="edit-form" name="taal">
                         {% for taal in talen %}
                             <option value="{{ taal.code }}"{% if taal.actief %} selected{% endif %}>{{ taal.taal }}</option>
                         {% endfor %}
@@ -41,13 +59,13 @@
                     <ul>
                         <li>
                             <label class="black-text" for="id_radio_1">
-                                <input class="with-gap" type="radio" name="bevinding" value="1" required id="id_radio_1"{% if check_1 %} checked{% endif %}>
+                                <input form="edit-form" class="with-gap" type="radio" name="bevinding" value="1" required id="id_radio_1"{% if check_1 %} checked{% endif %}>
                                 <span>Ja</span>
                             </label>
                         </li>
                         <li>
                             <label class="black-text" for="id_radio_2">
-                                <input class="with-gap" type="radio" name="bevinding" value="2" required id="id_radio_2"{% if check_2 %} checked{% endif %}>
+                                <input form="edit-form" class="with-gap" type="radio" name="bevinding" value="2" required id="id_radio_2"{% if check_2 %} checked{% endif %}>
                                 <span>Nee (ik wil deze handmatig goedkeuren)</span>
                             </label>
                         </li>
@@ -56,21 +74,42 @@
             </tr>
 
             <tr>
+                <td>Bestand:</td>
+                <td>
+                    {% if niet_gevonden %}
+                        <span class="red-text"><i>Niet aanwezig</i></span>
+                    {% else %}
+                        <span class="green-text">Aanwezig</span><code>&nbsp;({{ bestandsnaam }})</code></span>
+                    {% endif %}
+
+                    <br>
+                    <br>
+
+                    <div class="input-field file-field">
+                        <div class="btn">
+                            <span><i class="material-icons-round left">save</i>Kies bestand</span>
+                            <input form="upload-form" type="file" onchange="verander_upload_knop()" name="bestand">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input form="upload-form" class="file-path validate" type="text">
+                        </div>
+                    </div>
+
+                    <button form="upload-form" class="btn-dof-rood" type="submit" id="upload_knop" disabled>
+                        <i class="material-icons-round left">publish</i>Begin upload</button>
+                </td>
+            </tr>
+
+            <tr>
                 <td rowspan="5">Specifieke teksten waarop dit product gekozen moet worden:<br><br>
                 <span>(maar 1 van deze teksten hoeft gevonden te worden)</span></td>
-                <td><input type="text" name="match1" maxlength="100" value="{{ product.match_1 }}"></td>
-            </tr>
-            <tr>
-                <td><input type="text" name="match2" maxlength="100" value="{{ product.match_2 }}"></td>
-            </tr>
-            <tr>
-                <td><input type="text" name="match3" maxlength="100" value="{{ product.match_3 }}"></td>
-            </tr>
-            <tr>
-                <td><input type="text" name="match4" maxlength="100" value="{{ product.match_4 }}"></td>
-            </tr>
-            <tr>
-                <td><input type="text" name="match5" maxlength="100" value="{{ product.match_5 }}"></td>
+                <td>
+                    <input form="edit-form" type="text" name="match1" maxlength="100" value="{{ product.match_1 }}"><br>
+                    <input form="edit-form" type="text" name="match2" maxlength="100" value="{{ product.match_2 }}"><br>
+                    <input form="edit-form" type="text" name="match3" maxlength="100" value="{{ product.match_3 }}"><br>
+                    <input form="edit-form" type="text" name="match4" maxlength="100" value="{{ product.match_4 }}"><br>
+                    <input form="edit-form" type="text" name="match5" maxlength="100" value="{{ product.match_5 }}">
+                </td>
             </tr>
         </table>
 
@@ -81,7 +120,7 @@
 
             <span>&nbsp;&nbsp;</span>
 
-            <button class="btn-dof-rood" type="submit"{% if is_staff %} disabled{% endif %}>
+            <button form="edit-form" class="btn-dof-rood" type="submit"{% if is_staff %} disabled{% endif %}>
                 <i class="material-icons-round left">check</i>Opslaan</button>
         </p>
 

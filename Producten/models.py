@@ -4,9 +4,12 @@
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
+from django.conf import settings
 from django.db import models
 from Account.models import Account
 from Mailer.models import Inbox
+from uuid import uuid5, NAMESPACE_URL
+import os
 
 
 TALEN = (
@@ -17,6 +20,8 @@ TALEN = (
     ('SE', 'Zweeds'),
     ('TU', 'Turks'),
 )
+
+uuid_namespace = uuid5(NAMESPACE_URL, 'DOF.Producten.models')
 
 
 class Product(models.Model):
@@ -74,6 +79,16 @@ class Product(models.Model):
         verbose_name_plural = "Producten"
 
     objects = models.Manager()      # for the editor only
+
+
+def get_path_to_product_bestand(prod):
+    """ retourneer het volledige pad naar het bestand """
+    naam = prod.naam_bestand.split('/')[-1]  # verwijder pad voor veiligheid
+    fpath = os.path.join(settings.DOF_FILE_STORE,
+                         prod.eigenaar.username,
+                         'prod-%s' % prod.pk,
+                         naam)
+    return fpath, naam
 
 
 class Opdracht(models.Model):
@@ -135,7 +150,11 @@ class Levering(models.Model):
     # wanneer aangemaakt
     aangemaakt_op = models.DateTimeField(auto_now_add=True)      # automatisch invullen
 
+    # download code
+    url_code = models.CharField(max_length=32, default='')
+
     # hoort bij welke opdracht?
+    # SET_NULL laat de opdrachten opruimen en de download bestaan
     opdracht = models.ForeignKey(Opdracht, on_delete=models.SET_NULL, null=True, blank=True)
 
     # welk product is geleverd?
@@ -147,12 +166,24 @@ class Levering(models.Model):
     # aan wie geleverd
     to_email = models.CharField(max_length=250, default='')
 
+    # geblokkeerd?
+    is_geblokkeerd = models.BooleanField(default=False)
+
     def __str__(self):
         """ Lever een tekstuele beschrijving van een database record, voor de admin interface """
         return "[%s] Levering van '%s' (van %s) aan %s" % (self.aangemaakt_op,
                                                            self.product.korte_beschrijving,
                                                            self.eigenaar.username,
                                                            self.to_email)
+
+    def maak_url_code(self):
+        # voeg argumenten toe om het uniek te maken
+        args = {'datum': str(self.aangemaakt_op),
+                'eigenaar': self.eigenaar.username,
+                'opdracht': self.opdracht.pk,
+                'product': self.product.korte_beschrijving,
+                'email': self.to_email}
+        self.url_code = uuid5(uuid_namespace, repr(args)).hex
 
     class Meta:
         """ meta data voor de admin interface """

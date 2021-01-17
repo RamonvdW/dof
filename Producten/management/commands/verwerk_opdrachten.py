@@ -13,11 +13,13 @@ from django.db.models import F
 from Account.models import Account
 from Mailer.models import Inbox
 from Overig.background_sync import BackgroundSync
-from Producten.models import Product, Opdracht, BerichtTemplate
+from Producten.models import (Product, Opdracht, Levering, BerichtTemplate,
+                              get_path_to_product_bestand)
 import django.db.utils
 import datetime
 import logging
 import json
+import os
 
 
 my_logger = logging.getLogger('DOF.Opdrachten')
@@ -74,12 +76,26 @@ class Command(BaseCommand):
         # zoek matchende producten
         for prod in Product.objects.filter(eigenaar=opdracht.eigenaar):
             if prod.is_match(lines):
-                opdracht.producten.add(prod)
-                taal = prod.taal
+                # controleer dat het bestand bestaat, anders niet leveren
+                fpath, _ = get_path_to_product_bestand(prod)
+                if os.path.exists(fpath):
+                    opdracht.producten.add(prod)
+                    taal = prod.taal
 
-                # TODO: download url genereren naar Levering
-                url = settings.SITE_URL + '/download/tbd'
-                prod_links += '%s: %s\n' % (prod.korte_beschrijving, url)
+                    # levering aanmaken (of hergebruiken)
+                    try:
+                        levering = Levering.objects.get(opdracht=opdracht,
+                                                        product=prod)
+                    except Levering.DoesNotExist:
+                        levering = Levering(opdracht=opdracht,
+                                            product=prod,
+                                            eigenaar=opdracht.eigenaar,
+                                            to_email=email)
+                        levering.maak_url_code()
+                        levering.save()
+
+                    url = settings.SITE_URL + '/download/%s/' % levering.url_code
+                    prod_links += '%s: %s\n' % (prod.korte_beschrijving, url)
 
                 if prod.handmatig_vrijgeven:
                     opdracht.is_vrijgegeven_voor_levering = False
@@ -114,7 +130,7 @@ class Command(BaseCommand):
         opdracht.save()
 
         if opdracht.is_vrijgegeven_voor_levering:
-            # TODO: ping taak voor verwerken van de opdracht (indien niet handmatig)
+            # TODO: mail versturen (indien niet handmatig vrijgeven)
             pass
 
         # success

@@ -12,6 +12,7 @@ from django.urls import path
 from django.contrib import admin
 from Plein.views import site_root_view
 from Beheer.views import BeheerAdminSite
+from Producten.view_leveringen import DownloadView
 
 # replace the admin site
 admin.site.__class__ = BeheerAdminSite
@@ -26,6 +27,7 @@ urlpatterns = [
     path('plein/',       include('Plein.urls')),
     path('dof/',         include('Producten.urls')),
     path('email/',       include('Mailer.urls')),
+    path('download/<code>/', DownloadView.as_view(), name='download'),
 ]
 
 if settings.DEBUG:          # pragma: no cover
