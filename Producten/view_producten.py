@@ -92,15 +92,24 @@ class ProductenView(UserPassesTestMixin, ListView):
                     .filter(eigenaar=self.request.user)
                     .order_by('-aangemaakt_op'))
 
+
+        code2lang = dict()
+        for code, lang in TALEN:
+            code2lang[code] = lang
+        # for
+
         for prod in qset:
             prod.url_wijzig = reverse('Producten:wijzig-product',
                                       kwargs={'product_pk': prod.pk})
 
-            prod.taal_lang = prod.taal
-            for code, taal_lang in TALEN:
-                if prod.taal == code:
-                    prod.taal_lang = taal_lang
-            # for
+            try:
+                prod.taal_lang = code2lang[prod.taal]
+            except KeyError:
+                # onbekende taal --> code weergeven
+                prod.taal_lang = prod.taal
+
+            fpath, _ = get_path_to_product_bestand(prod)
+            prod.bestand_ok = os.path.exists(fpath)
         # for
 
         return qset

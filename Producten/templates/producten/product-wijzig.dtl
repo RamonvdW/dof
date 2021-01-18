@@ -74,6 +74,28 @@
             </tr>
 
             <tr>
+                <td>Specifieke teksten waarop dit product gekozen moet worden:<br><br>
+                <span>(maar 1 van deze teksten hoeft gevonden te worden)</span></td>
+                <td>
+                    <input form="edit-form" type="text" name="match1" maxlength="100" value="{{ product.match_1 }}"><br>
+                    <input form="edit-form" type="text" name="match2" maxlength="100" value="{{ product.match_2 }}"><br>
+                    <input form="edit-form" type="text" name="match3" maxlength="100" value="{{ product.match_3 }}"><br>
+                    <input form="edit-form" type="text" name="match4" maxlength="100" value="{{ product.match_4 }}"><br>
+                    <input form="edit-form" type="text" name="match5" maxlength="100" value="{{ product.match_5 }}">
+                </td>
+            </tr>
+
+            <tr class="dof-grijs">
+                <!-- terug / opslaan knoppen -->
+                <td colspan="2">
+                    <button form="edit-form" class="btn-dof-rood float right" type="submit"{% if is_staff %} disabled{% endif %}>
+                        <i class="material-icons-round left">check</i>Opslaan</button>
+                    <br>
+                    <span>Heb je hierboven wijzigingen gemaakt? Sla die dan eerst op, anders gaan ze verloren.</span>
+                </td>
+            </tr>
+
+            <tr>
                 <td>Bestand:</td>
                 <td>
                     {% if niet_gevonden %}
@@ -100,29 +122,16 @@
                 </td>
             </tr>
 
-            <tr>
-                <td rowspan="5">Specifieke teksten waarop dit product gekozen moet worden:<br><br>
-                <span>(maar 1 van deze teksten hoeft gevonden te worden)</span></td>
-                <td>
-                    <input form="edit-form" type="text" name="match1" maxlength="100" value="{{ product.match_1 }}"><br>
-                    <input form="edit-form" type="text" name="match2" maxlength="100" value="{{ product.match_2 }}"><br>
-                    <input form="edit-form" type="text" name="match3" maxlength="100" value="{{ product.match_3 }}"><br>
-                    <input form="edit-form" type="text" name="match4" maxlength="100" value="{{ product.match_4 }}"><br>
-                    <input form="edit-form" type="text" name="match5" maxlength="100" value="{{ product.match_5 }}">
+            <tr class="dof-grijs">
+                <!-- terug knop -->
+                <td colspan="2">
+                    <a class="btn-dof-blauw" href="{{ url_terug }}">
+                        <i class="material-icons-round left">close</i>Terug</a>
                 </td>
             </tr>
+
+
         </table>
-
-        <!-- terug / opslaan knoppen -->
-        <p>
-            <a class="btn-dof-blauw" href="{{ url_terug }}">
-                <i class="material-icons-round left">close</i>Terug</a>
-
-            <span>&nbsp;&nbsp;</span>
-
-            <button form="edit-form" class="btn-dof-rood" type="submit"{% if is_staff %} disabled{% endif %}>
-                <i class="material-icons-round left">check</i>Opslaan</button>
-        </p>
 
     </form>
 

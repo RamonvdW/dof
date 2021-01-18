@@ -79,6 +79,7 @@ class Command(BaseCommand):
 
         taal = ''
         prod_links = ''
+        prod_count = 0
         # zoek matchende producten
         for prod in Product.objects.filter(eigenaar=opdracht.eigenaar):
             if prod.is_match(lines):
@@ -103,6 +104,7 @@ class Command(BaseCommand):
 
                     url = settings.SITE_URL + '/download/%s/' % levering.url_code
                     prod_links += '%s: %s\n' % (prod.korte_beschrijving, url)
+                    prod_count += 1
 
                 if prod.handmatig_vrijgeven:
                     opdracht.is_vrijgegeven_voor_levering = False
@@ -129,7 +131,10 @@ class Command(BaseCommand):
             opdracht.save()
             return False
 
-        msg = template.intro
+        if prod_count > 1:
+            msg = template.plural
+        else:
+            msg = template.singular
         msg = msg.replace('%NAME%', opdracht.to_naam)
         msg = msg.replace('%LINKS%', prod_links)
 

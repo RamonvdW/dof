@@ -44,7 +44,7 @@ class Product(models.Model):
     aangemaakt_op = models.DateTimeField(auto_now_add=True)      # automatisch invullen
 
     # handmatig vrijgeven van levering?
-    handmatig_vrijgeven = models.BooleanField(default=False)
+    handmatig_vrijgeven = models.BooleanField(default=True)
 
     # strings waarop dit product kunnen matchen in de order fulfillment e-mail
     match_1 = models.CharField(max_length=100, default='', blank=True)
@@ -205,10 +205,10 @@ class BerichtTemplate(models.Model):
     taal = models.CharField(max_length=2, choices=TALEN)
 
     # intro
-    intro = models.TextField()
+    singular = models.TextField()
 
     # outro
-    outro = models.TextField()
+    plural = models.TextField()
 
     def __str__(self):
         return "[%s] %s" % (self.eigenaar.get_first_name(), self.taal)

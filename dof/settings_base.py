@@ -224,11 +224,11 @@ DOWNLOAD_CREDITS = 10
 # talen voor de invoer van het e-mailadres
 EMAIL_TALEN = (
     ('NL', 'Voer uw e-mailadres in', 'Verstuur'),
-    ('DU', 'Bitte geben Sie ihre E-Mail-Adresse an', 'Senden'),
+    ('DU', 'Bitte tragen Sie ihre E-Mail-Adresse ein', 'Senden'),
     ('EN', 'Please enter your e-mail address', 'Submit'),
-    ('TR', 'Lütfen e-posta adresinizi girin', 'Göndermek'),
+    ('TR', 'Lütfen e-posta adresinizi giriniz', 'Gönder'),
     ('SE', 'Ange din e-postadress', 'Skicka'),
-    ('FR', 'Veuillez saisir votre adresse e-mail', 'Envoyer'),
+    ('FR', 'Veuillez saisir votre adresse e-mail', 'Confirmer'),
 )
 
 # end of file
