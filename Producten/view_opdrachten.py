@@ -30,6 +30,9 @@ class OpdrachtenView(UserPassesTestMixin, ListView):
     # class variables shared by all instances
     template_name = TEMPLATE_OPDRACHT_LIJST
 
+    # TODO: pagination support
+    # TODO: zoek/filter mogelijkheden
+
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
         return self.request.user.is_authenticated
@@ -81,12 +84,12 @@ class OpdrachtenView(UserPassesTestMixin, ListView):
         if self.request.user.is_staff:
             qset = (Opdracht
                     .objects
-                    .order_by('-aangemaakt_op'))  # nieuwste bovenaan
+                    .order_by('-aangemaakt_op'))[:200]  # nieuwste bovenaan
         else:
             qset = (Opdracht
                     .objects
                     .filter(eigenaar=self.request.user)
-                    .order_by('-aangemaakt_op'))        # nieuwste bovenaan
+                    .order_by('-aangemaakt_op'))[:200]        # nieuwste bovenaan
 
         for obj in qset:
             obj.url_bekijk = reverse('Producten:bekijk-opdracht',

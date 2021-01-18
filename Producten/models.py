@@ -18,7 +18,7 @@ TALEN = (
     ('DU', 'Duits'),
     ('FR', 'Frans'),
     ('SE', 'Zweeds'),
-    ('TU', 'Turks'),
+    ('TR', 'Turks'),
 )
 
 uuid_namespace = uuid5(NAMESPACE_URL, 'DOF.Producten.models')
@@ -165,6 +165,9 @@ class Levering(models.Model):
 
     # aan wie geleverd
     to_email = models.CharField(max_length=250, default='')
+
+    # aantal keer gedownload
+    download_count = models.PositiveIntegerField(default=0)
 
     # geblokkeerd?
     is_geblokkeerd = models.BooleanField(default=False)

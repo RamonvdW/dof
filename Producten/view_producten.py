@@ -29,6 +29,9 @@ class ProductenView(UserPassesTestMixin, ListView):
     # class variables shared by all instances
     template_name = TEMPLATE_PRODUCTEN
 
+    # TODO: pagination support
+    # TODO: zoek/filter mogelijkheden
+
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
         return self.request.user.is_authenticated

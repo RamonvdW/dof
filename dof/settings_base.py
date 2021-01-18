@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(PROJ_DIR)
 
 # version of the site
 # this is used to keep site feedback separated by version
-SITE_VERSIE = '2021-01-17'
+SITE_VERSIE = '2021-01-18'
 
 # modules van de site
 INSTALLED_APPS = [
@@ -197,14 +197,6 @@ LOGGING = {
             'handlers': ['syslog'],
             'level': 'ERROR'
         },
-        'saml2': {
-            'handlers': ['syslog'],
-            'level': 'WARNING'
-        },
-        'djangosaml2idp': {
-            'handlers': ['syslog'],
-            'level': 'WARNING'
-        },
         '': {
             'handlers': ['syslog'],
             'level': 'DEBUG'
@@ -225,5 +217,18 @@ DEBUG = False
 
 # HTML validation using v.Nu (see Overig/e2ehelpers.py)
 TEST_VALIDATE_HTML = False
+
+# aantal keer dat een product gedownload mag worden
+DOWNLOAD_CREDITS = 10
+
+# talen voor de invoer van het e-mailadres
+EMAIL_TALEN = (
+    ('NL', 'Voer uw e-mailadres in', 'Verstuur'),
+    ('DU', 'Bitte geben Sie ihre E-Mail-Adresse an', 'Senden'),
+    ('EN', 'Please enter your e-mail address', 'Submit'),
+    ('TR', 'Lütfen e-posta adresinizi girin', 'Göndermek'),
+    ('SE', 'Ange din e-postadress', 'Skicka'),
+    ('FR', 'Veuillez saisir votre adresse e-mail', 'Envoyer'),
+)
 
 # end of file

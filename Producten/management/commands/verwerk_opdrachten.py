@@ -11,7 +11,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.models import F
 from Account.models import Account
-from Mailer.models import Inbox
+from Mailer.models import Inbox, mailer_email_is_valide
 from Overig.background_sync import BackgroundSync
 from Producten.models import (Product, Opdracht, Levering, BerichtTemplate,
                               get_path_to_product_bestand)
@@ -56,6 +56,12 @@ class Command(BaseCommand):
             my_logger.error('Inbox pk=%s heeft niet alle benodigde items' % inbox.pk)
             return False        # faal
 
+        email = email.strip()
+        if not mailer_email_is_valide(email):
+            self.stderr.write('[ERROR] Inbox pk=%s heeft geen valide e-mail: %s' % (inbox.pk, repr(email)))
+            my_logger.error('Inbox pk=%s heeft geen valide e-mail: %s' % (inbox.pk, repr(email)))
+            return False        # faal
+
         try:
             opdracht = Opdracht.objects.get(bron=inbox)
         except Opdracht.DoesNotExist:
@@ -92,6 +98,7 @@ class Command(BaseCommand):
                                             eigenaar=opdracht.eigenaar,
                                             to_email=email)
                         levering.maak_url_code()
+                        levering.download_count = settings.DOWNLOAD_CREDITS
                         levering.save()
 
                     url = settings.SITE_URL + '/download/%s/' % levering.url_code
