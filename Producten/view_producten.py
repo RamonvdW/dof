@@ -7,7 +7,6 @@
 from django.shortcuts import reverse
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView, TemplateView, View
-from django import forms
 from django.urls import Resolver404
 from django.http import HttpResponseRedirect
 from .models import Product, TALEN, get_path_to_product_bestand
@@ -91,7 +90,6 @@ class ProductenView(UserPassesTestMixin, ListView):
                     .objects
                     .filter(eigenaar=self.request.user)
                     .order_by('-aangemaakt_op'))
-
 
         code2lang = dict()
         for code, lang in TALEN:
@@ -313,13 +311,16 @@ class UploadView(UserPassesTestMixin, View):
             my_logger.info('Upload van %s voor product %s gelukt' % (repr(fpath), product.pk))
 
             # verwijder het oude bestand, indien aanwezig
-            if os.path.exists(old_fpath):
-                try:
-                    os.remove(old_fpath)
-                except OSError as exc:
-                    my_logger.error('Verwijderen van oude bestand %s voor product %s mislukt: %s' % (repr(old_fpath), product.pk, str(exc)))
-                else:
-                    my_logger.info('Verwijderen van oude bestand %s voor product %s gelukt' % (repr(old_fpath), product.pk))
+            if fpath != old_fpath:
+                if os.path.exists(old_fpath):
+                    try:
+                        os.remove(old_fpath)
+                    except OSError as exc:
+                        my_logger.error('Verwijderen van oude bestand %s voor product %s mislukt: %s' % (repr(old_fpath), product.pk, str(exc)))
+                    else:
+                        my_logger.info('Verwijderen van oude bestand %s voor product %s gelukt' % (repr(old_fpath), product.pk))
+            else:
+                my_logger.info('Verwijderen van oude bestand %s voor product %s overgeslagen, want identieke naam' % (repr(old_fpath), product.pk))
 
         # terug naar de wijzig-product pagina
         url = reverse('Producten:wijzig-product', kwargs={'product_pk': product.pk})

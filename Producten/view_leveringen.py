@@ -7,7 +7,7 @@
 from django.conf import settings
 from django.shortcuts import render, reverse
 from django.views.generic import ListView, View, TemplateView
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponse
 from Mailer.models import mailer_email_is_valide
 from Overig.helpers import get_safe_from_ip
 from .models import Levering, get_path_to_product_bestand

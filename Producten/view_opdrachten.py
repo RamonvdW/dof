@@ -257,7 +257,8 @@ class OpdrachtVrijgevenView(UserPassesTestMixin, View):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
         return HttpResponseRedirect(reverse('Plein:plein'))
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         eigenaar = request.user
 
         try:
@@ -267,7 +268,7 @@ class OpdrachtVrijgevenView(UserPassesTestMixin, View):
                         .select_related('bron')
                         .get(pk=opdracht_pk,
                              eigenaar=eigenaar))            # alleen eigen producten
-        except (ValueError, Opdracht.DoesNotExit):
+        except (ValueError, Opdracht.DoesNotExist):
             raise Resolver404()
 
         if opdracht.is_afgehandeld or opdracht.is_vrijgegeven_voor_levering:
