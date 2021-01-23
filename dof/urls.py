@@ -27,7 +27,7 @@ urlpatterns = [
     path('plein/',       include('Plein.urls')),
     path('dof/',         include('Producten.urls')),
     path('email/',       include('Mailer.urls')),
-    path('download/<code>/', DownloadView.as_view(), name='download'),
+    path('code/<code>/', DownloadView.as_view(), name='download'),
 ]
 
 if settings.DEBUG:          # pragma: no cover

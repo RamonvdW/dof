@@ -103,7 +103,7 @@ class Command(BaseCommand):
                             levering.download_count = settings.DOWNLOAD_CREDITS
                             levering.save()
 
-                        url = settings.SITE_URL + '/download/%s/' % levering.url_code
+                        url = settings.SITE_URL + '/code/%s/' % levering.url_code
                         prod_links.append('%s: %s' % (prod.korte_beschrijving, url))
 
                     if prod.handmatig_vrijgeven:
