@@ -63,12 +63,11 @@ class Product(models.Model):
         """ Lever een tekstuele beschrijving van een database record, voor de admin interface """
         return "Product '%s' (van %s)" % (self.korte_beschrijving, self.eigenaar.username)
 
-    def is_match(self, lines):
+    def is_match(self, regel):
         for match in (self.match_1, self.match_2, self.match_3, self.match_4, self.match_5):
             if len(match) > 0:
-                for line in lines:
-                    if line.find(match) >= 0:
-                        return True
+                if regel.find(match) >= 0:
+                    return True
                 # for
         # for
         return False
@@ -105,6 +104,9 @@ class Opdracht(models.Model):
     to_email = models.CharField(max_length=250, default='')
     to_naam = models.CharField(max_length=100, default='')
 
+    # onderwerp voor de email
+    subject = models.CharField(max_length=100, default='')
+
     # de ontvangen mail body met de opdracht
     mail_body = models.TextField()
 
@@ -119,6 +121,9 @@ class Opdracht(models.Model):
 
     # gemaakt uit welke binnenkomende mail?
     bron = models.ForeignKey(Inbox, on_delete=models.SET_NULL, null=True, blank=True)
+
+    # regels met bestelling-details die in de mail gevonden zijn
+    regels = models.TextField(default='', blank=True)
 
     def __str__(self):
         """ Lever een tekstuele beschrijving van een database record, voor de admin interface """
@@ -203,6 +208,9 @@ class BerichtTemplate(models.Model):
 
     # in welke taal is dit bericht
     taal = models.CharField(max_length=2, choices=TALEN)
+
+    # onderwerp voor de email
+    subject = models.CharField(max_length=100, default='')
 
     # intro
     singular = models.TextField()

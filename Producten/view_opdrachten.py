@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views.generic import ListView, TemplateView, View
 from django.contrib.auth.mixins import UserPassesTestMixin
-from Mailer.models import Inbox
+from Mailer.models import Inbox, mailer_queue_email
 from Overig.background_sync import BackgroundSync
 from .models import Opdracht
 import json
@@ -275,6 +275,13 @@ class OpdrachtVrijgevenView(UserPassesTestMixin, View):
             raise Resolver404()
 
         opdracht.is_vrijgegeven_voor_levering = True
+        opdracht.save()
+
+        mailer_queue_email(opdracht.to_email,
+                           opdracht.subject,
+                           opdracht.mail_body)
+
+        opdracht.is_afgehandeld = True
         opdracht.save()
 
         url = reverse('Producten:bekijk-opdracht',

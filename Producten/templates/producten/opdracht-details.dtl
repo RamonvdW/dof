@@ -49,6 +49,11 @@
         </tr>
 
         <tr>
+            <td>Onderwerp regel:</td>
+            <td colspan="2">{{ opdracht.subject }}</td>
+        </tr>
+
+        <tr>
             <td>Gemaakt bericht:</td>
             <td colspan="2">{{ opdracht.mail_body|linebreaks }}</td>
         </tr>
@@ -89,6 +94,14 @@
     {% endif %}
 
     <p>&nbsp;</p>
+    <h5>Bekeken regels van de opdracht e-mail</h5>
+    <table class="white">
+        <tr>
+            <td>{{ opdracht.regels|linebreaks }}</td>
+        </tr>
+    </table>
+
+    <p>&nbsp;</p>
     <h5>Ontvangen opdracht e-mail</h5>
     <table class="white">
         <tr>
@@ -102,44 +115,6 @@
                 </td>
             {% endif %}
         </tr>
-    </table>
-
-    <table class="white">
-        <thead>
-            <tr>
-                <th>Wanneer</th>
-                <th>Status</th>
-                <th>Producten</th>
-                <th><!-- kolom voor knoppen --></th>
-            </tr>
-        </thead>
-
-        {% for obj in object_list %}
-            <tr>
-                <td>{{ obj.aangemaakt_op }}</td>
-
-                <td>
-                    {% if is_afgehandled %}
-                        <span>Afgehandeld</span>
-                    {% elif is_vrijgegeven_voor_levering %}
-                        <span>Klaar voor levering</span>
-                    {% else %}
-                        <span>Wacht op vrijgave</span>
-                    {% endif %}
-                </td>
-
-                <td>
-                    {% for prod in obj.producten.all %}
-                        <span>{{ prod.korte_beschrijving }}</span><br>
-                    {% endfor %}
-                </td>
-
-                <td>
-                    <a class="btn-dof-blauw" href="{{ obj.url_bekijk }}">Bekijk</a>
-                </td>
-            </tr>
-        {% endfor %}
-
     </table>
 
     <p>

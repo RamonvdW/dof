@@ -11,7 +11,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.models import F
 from Account.models import Account
-from Mailer.models import Inbox, mailer_email_is_valide
+from Mailer.models import Inbox, mailer_email_is_valide, mailer_queue_email
 from Overig.background_sync import BackgroundSync
 from Producten.models import (Product, Opdracht, Levering, BerichtTemplate,
                               get_path_to_product_bestand)
@@ -41,9 +41,7 @@ class Command(BaseCommand):
                             help="Aantal minuten actief blijven")
         parser.add_argument('--quick', action='store_true')     # for testing
 
-    def _maak_opdracht(self, inbox, items, lines):
-        # TODO: sanity-check dat dit van de webshop komt
-
+    def _maak_opdracht(self, inbox, items, order, template_taal):
         try:
             email = items['E-mail']
             naam = items['Naam']
@@ -75,45 +73,48 @@ class Command(BaseCommand):
         opdracht.eigenaar = Account.objects.get(username=settings.DEFAULT_EIGENAAR)
         opdracht.to_email = email
         opdracht.to_naam = naam
+        opdracht.regels = "\n".join([regel for _, regel in order])
+        opdracht.regels += '\n\nGekozen taal voor de levering: %s' % template_taal
         opdracht.save()
 
-        taal = ''
-        prod_links = ''
-        prod_count = 0
+        prod_links = list()
         # zoek matchende producten
-        for prod in Product.objects.filter(eigenaar=opdracht.eigenaar):
-            if prod.is_match(lines):
-                # controleer dat het bestand bestaat, anders niet leveren
-                fpath, _ = get_path_to_product_bestand(prod)
-                if os.path.exists(fpath):
-                    opdracht.producten.add(prod)
-                    taal = prod.taal
+        for taal, regel in order:
+            for prod in (Product
+                         .objects
+                         .filter(eigenaar=opdracht.eigenaar,
+                                 taal=taal)):
+                if prod.is_match(regel):
+                    # controleer dat het bestand bestaat, anders niet leveren
+                    fpath, _ = get_path_to_product_bestand(prod)
+                    if os.path.exists(fpath):
+                        opdracht.producten.add(prod)
 
-                    # levering aanmaken (of hergebruiken)
-                    try:
-                        levering = Levering.objects.get(opdracht=opdracht,
-                                                        product=prod)
-                    except Levering.DoesNotExist:
-                        levering = Levering(opdracht=opdracht,
-                                            product=prod,
-                                            eigenaar=opdracht.eigenaar,
-                                            to_email=email)
-                        levering.maak_url_code()
-                        levering.download_count = settings.DOWNLOAD_CREDITS
-                        levering.save()
+                        # levering aanmaken (of hergebruiken)
+                        try:
+                            levering = Levering.objects.get(opdracht=opdracht,
+                                                            product=prod)
+                        except Levering.DoesNotExist:
+                            levering = Levering(opdracht=opdracht,
+                                                product=prod,
+                                                eigenaar=opdracht.eigenaar,
+                                                to_email=email)
+                            levering.maak_url_code()
+                            levering.download_count = settings.DOWNLOAD_CREDITS
+                            levering.save()
 
-                    url = settings.SITE_URL + '/download/%s/' % levering.url_code
-                    prod_links += '%s: %s\n' % (prod.korte_beschrijving, url)
-                    prod_count += 1
+                        url = settings.SITE_URL + '/download/%s/' % levering.url_code
+                        prod_links.append('%s: %s' % (prod.korte_beschrijving, url))
 
-                if prod.handmatig_vrijgeven:
-                    opdracht.is_vrijgegeven_voor_levering = False
+                    if prod.handmatig_vrijgeven:
+                        opdracht.is_vrijgegeven_voor_levering = False
+            # for
         # for
 
-        if prod_links == '':
+        if len(prod_links) == 0:
             # geen producten kunnen matchen
             opdracht.is_vrijgegeven_voor_levering = False
-            my_logger.error('Opdracht pk=%s niet kunnen koppelen aan een product' % opdracht.pk)
+            my_logger.warning('Opdracht pk=%s niet kunnen koppelen aan een product' % opdracht.pk)
             opdracht.save()
             return False        # faal
 
@@ -121,29 +122,37 @@ class Command(BaseCommand):
             template = (BerichtTemplate
                         .objects
                         .get(eigenaar=opdracht.eigenaar,
-                             taal=taal))
+                             taal=template_taal))
         except BerichtTemplate.DoesNotExist:
             # geen template kunnen maken
             opdracht.is_vrijgegeven_voor_levering = False
             my_logger.error('Geen template voor taal %s en eigenaar %s' % (
-                                    repr(taal),
+                                    repr(template_taal),
                                     opdracht.eigenaar.get_first_name()))
             opdracht.save()
             return False
 
-        if prod_count > 1:
+        if len(prod_links) > 1:
             msg = template.plural
         else:
             msg = template.singular
         msg = msg.replace('%NAME%', opdracht.to_naam)
-        msg = msg.replace('%LINKS%', prod_links)
+        msg = msg.replace('%LINKS%', "\n".join(prod_links))
+
+        print('prod_links: %s' % repr(prod_links))
+        print('msg: %s' % repr(msg))
 
         opdracht.mail_body = msg
+        opdracht.subject = template.subject
         opdracht.save()
 
+        # indien automatisch vrijgegeven, verstuur meteen de e-mail
         if opdracht.is_vrijgegeven_voor_levering:
-            # TODO: mail versturen (indien niet handmatig vrijgeven)
-            pass
+            mailer_queue_email(opdracht.to_email,
+                               opdracht.subject,
+                               opdracht.mail_body)
+            opdracht.is_afgehandeld = True
+            opdracht.save()
 
         # success
         return True
@@ -161,11 +170,19 @@ class Command(BaseCommand):
             return True     # niet meer naar kijken
 
         # remove garbage
-        body = body.replace('\xa0', '')
+        body = body.replace('\xa0', ' ')
         for field in ('Naam', 'E-mail', 'Telefoon', 'Straat', 'Postcode', 'Plaats', 'Land'):
             body = body.replace(' %s: ' % field, '\n%s:\n' % field)
             body = body.replace(' %s:' % field, '\n%s:' % field)
         # for
+
+        # in welke taal moeten we de e-mail sturen?
+        if "Zwischensumme " in body and " Insgesamt " in body:
+            template_taal = 'DU'
+        elif " Totaal " in body and "Subtotaal " in body:
+            template_taal = 'NL'
+        else:
+            template_taal = 'EN'
 
         # de body bestaat uit regels met tekst met 'foute' newlines
         # opsplitsen en deze newlines dumpen
@@ -193,7 +210,33 @@ class Command(BaseCommand):
                 line_nr += 1
         # while
 
-        return self._maak_opdracht(inbox, items, lines)
+        # een bestelling staat soms op twee regels
+        order = list()
+        # voeg daarom alles weer samen en ga op zoek naar de producten
+        # elk product eindigt met een ":"<spatie>taal<spatie>
+        body = " ".join(lines)
+        for taal_code, taal_label in (('NL', ': Nederlands '),
+                                      ('EN', ': English '),
+                                      ('DU', ': Deutsch ')):
+            start = 0
+            pos = body.find(taal_label, start)
+            while pos >= 0:
+                # zoek nu het begin van de regel: <spatie>x<spatie>
+                sub = body[start:pos + len(taal_label)]
+                pos2 = sub.rfind(' x ')
+                if pos2 >= 0:
+                    if pos2 > 3:
+                        pos2 -= 3       # aantal ook mee krijgen
+                    regel = sub[pos2:]
+                    tup = (taal_code, regel)
+                    # print('order: %s' % repr(tup))
+                    order.append(tup)
+                start = pos + 1
+                pos = body.find(taal_label, start)
+            # while
+        # for
+
+        return self._maak_opdracht(inbox, items, order, template_taal)
 
     def _verwerk_ontvangen_mails(self):
         for obj in Inbox.objects.filter(is_verwerkt=False):
