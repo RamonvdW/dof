@@ -139,9 +139,6 @@ class Command(BaseCommand):
         msg = msg.replace('%NAME%', opdracht.to_naam)
         msg = msg.replace('%LINKS%', "\n".join(prod_links))
 
-        print('prod_links: %s' % repr(prod_links))
-        print('msg: %s' % repr(msg))
-
         opdracht.mail_body = msg
         opdracht.subject = template.subject
         opdracht.save()
@@ -229,7 +226,6 @@ class Command(BaseCommand):
                         pos2 -= 3       # aantal ook mee krijgen
                     regel = sub[pos2:]
                     tup = (taal_code, regel)
-                    # print('order: %s' % repr(tup))
                     order.append(tup)
                 start = pos + 1
                 pos = body.find(taal_label, start)
