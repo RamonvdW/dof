@@ -28,43 +28,10 @@ TEMPLATE_LOGIN = 'account/login.dtl'
 TEMPLATE_BEVESTIGD = 'account/bevestigd.dtl'
 TEMPLATE_AANGEMAAKT = 'account/email_aangemaakt.dtl'
 TEMPLATE_GEBLOKKEERD = 'account/geblokkeerd.dtl'
-TEMPLATE_NIEUWE_EMAIL = 'account/nieuwe-email.dtl'
 TEMPLATE_BEVESTIG_EMAIL = 'account/bevestig-email.dtl'
 
 
 my_logger = logging.getLogger('DOF.Account')
-
-
-def account_check_nieuwe_email(request, from_ip, account):
-    """ detecteer wissel van email in CRM; stuur bevestig verzoek mail """
-
-    # kijk of een nieuw e-mailadres bevestigd moet worden
-    ack_url, mailadres = account_check_gewijzigde_email(account)
-    if ack_url:
-        # schrijf in het logboek
-        schrijf_in_logboek(account=None,
-                           gebruikte_functie="Inloggen",
-                           activiteit="Bevestiging van nieuwe email gevraagd voor account %s" % repr(
-                               account.username))
-
-        text_body = ("Hallo!\n\n"
-                     + "Dit is een verzoek vanuit de website van de NHB om toegang tot je email te bevestigen.\n"
-                     + "Klik op onderstaande link om dit te bevestigen.\n\n"
-                     + ack_url + "\n\n"
-                     + "Als je dit verzoek onverwacht ontvangen hebt, neem dan contact met ons op via info@handboogsport.nl\n\n"
-                     + "Veel plezier met de site!\n"
-                     + "Het bondsburo\n")
-
-        mailer_queue_email(mailadres, 'Email adres bevestigen', text_body)
-
-        context = {'partial_email': mailer_obfuscate_email(mailadres)}
-        return render(request, TEMPLATE_NIEUWE_EMAIL, context)
-
-    # geen wijziging van e-mailadres - gewoon doorgaan
-    return None
-
-
-account_add_plugin_login(30, account_check_nieuwe_email)
 
 
 def account_check_geblokkeerd(request, from_ip, account):

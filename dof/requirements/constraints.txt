@@ -1,4 +1,4 @@
-# constraints for pip packages for the NHB apps
+# constraints for pip packages for the DOF apps
 
 # stick to django 3.0 for now
 django<3.1

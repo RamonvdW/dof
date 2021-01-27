@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#  Copyright (c) 2019-2020 Ramon van der Winkel.
+#  Copyright (c) 2019-2021 Ramon van der Winkel.
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
@@ -10,7 +10,7 @@ from Overig.helpers import get_safe_from_ip
 import pyotp
 import logging
 
-my_logger = logging.getLogger('NHBApps.Account')
+my_logger = logging.getLogger('DOF.Account')
 
 
 def account_otp_is_gekoppeld(account):
