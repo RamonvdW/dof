@@ -212,9 +212,11 @@ class Command(BaseCommand):
         # voeg daarom alles weer samen en ga op zoek naar de producten
         # elk product eindigt met een ":"<spatie>taal<spatie>
         body = " ".join(lines)
-        for taal_code, taal_label in (('NL', ': Nederlands '),
-                                      ('EN', ': English '),
-                                      ('DU', ': Deutsch ')):
+        for taal_code, taal_label in (('NL', ': Nederlands '),          # Taal E-book: Nederlands / Sprache: Nederlands
+                                      ('DU', ': Deutsch '),             # Taal E-book: Deutsch / Sprache: Deutsch
+                                      ('EN', ': English '),             # Taal E-book: English / Sprache: English
+                                      ('EN', 'Subtotal (incl. VAT)'),   # Geen E-book/Sprache
+                                      ):
             start = 0
             pos = body.find(taal_label, start)
             while pos >= 0:
