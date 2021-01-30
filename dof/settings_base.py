@@ -219,7 +219,7 @@ DEBUG = False
 TEST_VALIDATE_HTML = False
 
 # aantal keer dat een product gedownload mag worden
-DOWNLOAD_CREDITS = 10
+DOWNLOAD_CREDITS = 5
 
 # talen voor de invoer van het e-mailadres
 EMAIL_TALEN = (
