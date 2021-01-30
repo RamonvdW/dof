@@ -105,6 +105,8 @@ class Command(BaseCommand):
 
                         url = settings.SITE_URL + '/code/%s/' % levering.url_code
                         prod_links.append('%s: %s' % (prod.korte_beschrijving, url))
+                    else:
+                        self.stderr.write('[ERROR] Kan bestand %s niet vinden' % repr(fpath))
 
                     if prod.handmatig_vrijgeven:
                         opdracht.is_vrijgegeven_voor_levering = False
@@ -212,10 +214,15 @@ class Command(BaseCommand):
         # voeg daarom alles weer samen en ga op zoek naar de producten
         # elk product eindigt met een ":"<spatie>taal<spatie>
         body = " ".join(lines)
-        for taal_code, taal_label in (('NL', ': Nederlands '),          # Taal E-book: Nederlands / Sprache: Nederlands
-                                      ('DU', ': Deutsch '),             # Taal E-book: Deutsch / Sprache: Deutsch
-                                      ('EN', ': English '),             # Taal E-book: English / Sprache: English
-                                      ('EN', 'Subtotal (incl. VAT)'),   # Geen E-book/Sprache
+        for taal_code, taal_label in (('NL', 'Sprache: Nederlands '),
+                                      ('DU', 'Sprache: Deutsch '),
+                                      ('EN', 'Sprache: English '),
+                                      ('NL', 'Taal E-book: Nederlands '),
+                                      ('DU', 'Taal E-book: Deutsch '),
+                                      ('EN', 'Taal E-book: English '),
+                                      ('NL', 'Language: Nederlands '),
+                                      ('DU', 'Language: Deutsch '),
+                                      ('EN', 'Language: English '),
                                       ):
             start = 0
             pos = body.find(taal_label, start)
@@ -233,6 +240,26 @@ class Command(BaseCommand):
                 pos = body.find(taal_label, start)
             # while
         # for
+
+        # special case: als er geen taal aangegeven is in de engelstalige webshop
+        if len(order) == 0:
+            taal_code = 'EN'
+            taal_label = 'Subtotal (incl. VAT)'
+            start = 0
+            pos = body.find(taal_label, start)
+            while pos >= 0:
+                # zoek nu het begin van de regel: <spatie>x<spatie>
+                sub = body[start:pos + len(taal_label)]
+                pos2 = sub.rfind(' x ')
+                if pos2 >= 0:
+                    if pos2 > 3:
+                        pos2 -= 3       # aantal ook mee krijgen
+                    regel = sub[pos2:]
+                    tup = (taal_code, regel)
+                    order.append(tup)
+                start = pos + 1
+                pos = body.find(taal_label, start)
+            # while
 
         return self._maak_opdracht(inbox, items, order, template_taal)
 
