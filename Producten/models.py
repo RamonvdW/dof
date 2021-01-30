@@ -61,7 +61,9 @@ class Product(models.Model):
 
     def __str__(self):
         """ Lever een tekstuele beschrijving van een database record, voor de admin interface """
-        return "Product '%s' (van %s)" % (self.korte_beschrijving, self.eigenaar.username)
+        return "Product '%s' [%s] (van %s)" % (self.korte_beschrijving,
+                                               self.taal,
+                                               self.eigenaar.username)
 
     def is_match(self, regel):
         for match in (self.match_1, self.match_2, self.match_3, self.match_4, self.match_5):
