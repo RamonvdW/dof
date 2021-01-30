@@ -118,7 +118,7 @@ class Opdracht(models.Model):
     # vrijgegeven voor levering?
     is_vrijgegeven_voor_levering = models.BooleanField(default=False)
 
-    # afgehandeld?
+    # is het product gedownload?
     is_afgehandeld = models.BooleanField(default=False)
 
     # gemaakt uit welke binnenkomende mail?

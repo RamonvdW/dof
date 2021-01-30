@@ -150,7 +150,6 @@ class Command(BaseCommand):
             mailer_queue_email(opdracht.to_email,
                                opdracht.subject,
                                opdracht.mail_body)
-            opdracht.is_afgehandeld = True
             opdracht.save()
 
         # success

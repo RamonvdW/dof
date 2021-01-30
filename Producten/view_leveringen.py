@@ -126,6 +126,7 @@ class DownloadView(View):
         try:
             levering = (Levering
                         .objects
+                        .select_related('opdracht')
                         .get(url_code=code))
         except Levering.DoesNotExist:
             return render(request, TEMPLATE_LEVERING_NIET_GEVONDEN)
@@ -166,6 +167,12 @@ class DownloadView(View):
         if levering.download_count <= 0:
             levering.is_geblokkeerd = True
         levering.save()
+
+        opdracht = levering.opdracht
+        if opdracht:
+            if not opdracht.is_afgehandeld:
+                opdracht.is_afgehandeld = True
+                opdracht.save()
 
         return response
 
