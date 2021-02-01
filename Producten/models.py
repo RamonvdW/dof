@@ -66,9 +66,10 @@ class Product(models.Model):
                                                self.eigenaar.username)
 
     def is_match(self, regel):
+        regel = regel.lower()
         for match in (self.match_1, self.match_2, self.match_3, self.match_4, self.match_5):
             if len(match) > 0:
-                if regel.find(match) >= 0:
+                if regel.find(match.lower()) >= 0:
                     return True
                 # for
         # for

@@ -129,6 +129,6 @@ class TestProductenCliVerwerkOpdrachten(E2EHelpers, TestCase):
         self._test_opdracht(6, 'EN', (('EN', 'PDF Jersey tee Francis'),))
 
     def test_07(self):
-        self._test_opdracht(7, 'EN', (('DU', 'PDF Shirt Francis'),), True)
+        self._test_opdracht(7, 'EN', (('DU', 'PDF Shirt Francis'),))
 
 # end of file
