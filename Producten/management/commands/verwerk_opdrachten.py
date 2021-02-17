@@ -175,9 +175,9 @@ class Command(BaseCommand):
         # for
 
         # in welke taal moeten we de e-mail sturen?
-        if "Zwischensumme " in body and "Insgesamt " in body:
+        if "Zwischensumme" in body and "Insgesamt" in body:
             template_taal = 'DU'
-        elif "Totaal " in body and "Subtotaal " in body:
+        elif "Totaal" in body and "Subtotaal" in body:
             template_taal = 'NL'
         else:
             template_taal = 'EN'
