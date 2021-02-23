@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#  Copyright (c) 2020 Ramon van der Winkel.
+#  Copyright (c) 2020-2021 Ramon van der Winkel.
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
@@ -9,8 +9,36 @@ from django.conf import settings
 from django.utils import timezone
 
 
+class Inbox(models.Model):
+    """ Database tabel om ontvangen e-mails in op te slaan """
+
+    # wanneer aangemaakt
+    aangemaakt_op = models.DateTimeField(auto_now_add=True)      # automatisch invullen
+
+    is_verwerkt = models.BooleanField(default=False)
+
+    # het volledige ontvangen bericht also JSON data
+    mail_text = models.TextField()
+
+    def __str__(self):
+        msg = "[%s] lengte: %s" % (
+                    self.aangemaakt_op.strftime('%Y-%m-%d %H:%M utc'),
+                    len(self.mail_text))
+        if self.is_verwerkt:
+            msg += ' [is verwerkt]'
+        else:
+            msg += ' [nog niet verwerkt]'
+        return msg
+
+    class Meta:
+        """ meta data voor de admin interface """
+        verbose_name = verbose_name_plural = "Mail inbox"
+
+    objects = models.Manager()      # for the editor only
+
+
 class MailQueue(models.Model):
-    """ Database tabel waarin de te versturen emails staan """
+    """ Database tabel waarin de te versturen e-mails staan """
 
     toegevoegd_op = models.DateTimeField()
     is_verstuurd = models.BooleanField()

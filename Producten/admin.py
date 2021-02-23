@@ -5,13 +5,13 @@
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
 from django.contrib import admin
-from .models import Product, Opdracht, Levering
+from .models import Product, Opdracht, Levering, BerichtTemplate
 
 
 class ProductAdmin(admin.ModelAdmin):
 
     # velden om in te zoeken (in de lijst)
-    search_fields = ('korte_beschrijving', )
+    search_fields = ('korte_beschrijving',)
 
     list_filter = ('eigenaar__username',)
 
@@ -33,5 +33,6 @@ class LeveringAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Opdracht, OpdrachtAdmin)
 admin.site.register(Levering, LeveringAdmin)
+admin.site.register(BerichtTemplate)
 
 # end of file

@@ -1,0 +1,28 @@
+{% extends 'plein/site_layout.dtl' %}
+{% comment %}
+                Copyright (c) 2021 Ramon van der Winkel.
+                All rights reserved.
+                Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
+{% endcomment %}
+{% load static %}
+
+{% block title %}Niet gevonden{% endblock %}
+
+{% block pagina %}
+
+    <h4>Niet gevonden</h4>
+
+    <p>Je bent op deze pagina gekomen omdat de gebruikte link niet (meer) werkt. Neem contact op met de verkoper voor meer informatie.</p>
+    <p>Je kan dit browser scherm sluiten.</p>
+
+    <hr>
+
+    <p>You have reached this page because the used link does not work or has expired. Please contact your reseller for support.</p>
+    <p>You can close this window.</p>
+
+    <hr>
+
+    <p>Sie haben diese Seite erreicht, weil der verwendete Link nicht funktioniert oder abgelaufen ist. Bitte wenden Sie sich an Ihren H&auml;ndler, um Unterst&uuml;tzung zu erhalten.</p>
+    <p>Sie k&ouml;nnen dieses Fenster schlie&szlig;en.</p>
+
+{% endblock %}

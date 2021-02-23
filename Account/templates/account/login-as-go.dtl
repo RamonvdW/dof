@@ -1,6 +1,6 @@
 {% extends 'plein/site_layout.dtl' %}
 {% comment %}
-                Copyright (c) 2020 Ramon van der Winkel.
+                Copyright (c) 2020-2021 Ramon van der Winkel.
                 All rights reserved.
                 Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 {% endcomment %}
@@ -9,7 +9,7 @@
 {% block extraheader %}
 <!-- voorkom dat de knop nog een keer gebruikt wordt (dat werkt toch niet)
      door dit browser window automatisch weg te sturen na 60 seconden -->
-<meta http-equiv="refresh" content="60; url=/functie/wissel-van-rol/" />
+<meta http-equiv="refresh" content="60; url=/plein/" />
 {% endblock %}
 
 {% block title %}Account wissel{% endblock %}

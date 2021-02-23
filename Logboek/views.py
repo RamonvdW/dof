@@ -15,7 +15,6 @@ from urllib.parse import quote_plus
 
 
 TEMPLATE_LOGBOEK_REST = 'logboek/rest.dtl'
-TEMPLATE_LOGBOEK_ROLLEN = 'logboek/rollen.dtl'
 TEMPLATE_LOGBOEK_UITROL = 'logboek/uitrol.dtl'
 TEMPLATE_LOGBOEK_ACCOUNTS = 'logboek/accounts.dtl'
 
@@ -113,7 +112,6 @@ class LogboekBasisView(UserPassesTestMixin, ListView):
         # for
 
         context['url_rest'] = reverse('Logboek:rest')
-        context['url_rollen'] = reverse('Logboek:rollen')
         context['url_uitrol'] = reverse('Logboek:uitrol')
         context['url_accounts'] = reverse('Logboek:accounts')
 
@@ -127,7 +125,6 @@ class LogboekBasisView(UserPassesTestMixin, ListView):
 
             zoekterm = "?zoekterm=%s" % quote_plus(zoekterm)
             context['url_rest'] += zoekterm
-            context['url_rollen'] += zoekterm
             context['url_uitrol'] += zoekterm
             context['url_accounts'] += zoekterm
 
@@ -149,14 +146,12 @@ class LogboekRestView(LogboekBasisView):
         return (LogboekRegel
                 .objects
                 .select_related('actie_door_account')
-                .exclude(Q(gebruikte_functie='Records') |           # Records
-                         Q(gebruikte_functie='maak_beheerder') |    # Accounts
+                .exclude(Q(gebruikte_functie='maak_beheerder') |    # Accounts
                          Q(gebruikte_functie='Wachtwoord') |        # Accounts
                          Q(gebruikte_functie='Inloggen') |
                          Q(gebruikte_functie='Inlog geblokkeerd') |
                          Q(gebruikte_functie='OTP controle') |
                          Q(gebruikte_functie='Bevestig e-mail') |
-                         Q(gebruikte_functie='Rollen') |            # Rollen
                          Q(gebruikte_functie='Uitrol'))             # Uitrol
                 .order_by('-toegevoegd_op'))
 
@@ -182,25 +177,6 @@ class LogboekAccountsView(LogboekBasisView):
                         Q(gebruikte_functie='OTP controle') |
                         Q(gebruikte_functie='Bevestig e-mail') |
                         Q(gebruikte_functie='Wachtwoord'))
-                .order_by('-toegevoegd_op'))
-
-
-class LogboekRollenView(LogboekBasisView):
-    """ Deze view toont de logboek regels die met het koppelen van rollen te maken hebben """
-
-    template_name = TEMPLATE_LOGBOEK_ROLLEN
-    filter = 'rollen'
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.base_url = reverse('Logboek:rollen')
-
-    def get_focused_queryset(self):
-        """ retourneer de data voor de template view """
-        return (LogboekRegel
-                .objects
-                .select_related('actie_door_account')
-                .filter(gebruikte_functie='Rollen')
                 .order_by('-toegevoegd_op'))
 
 

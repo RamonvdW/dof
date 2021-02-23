@@ -29,7 +29,7 @@ class ActiviteitView(UserPassesTestMixin, TemplateView):
 
         account = self.request.user
         if account.is_authenticated:
-            if account.is_BB or account.is_staff:
+            if account.is_staff:
                 return True
 
         return False

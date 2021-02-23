@@ -38,12 +38,12 @@ def account_stuur_email_wachtwoord_vergeten(accountemail, **kwargs):
     url = maak_tijdelijke_url_wachtwoord_vergeten(accountemail, **kwargs)
 
     text_body = ("Hallo!\n\n"
-                 + "Je hebt aangegeven je wachtwoord vergeten te zijn voor de website van de NHB.\n"
+                 + "Je hebt aangegeven je wachtwoord vergeten te zijn voor de DOF website.\n"
                  + "Klik op onderstaande link om een nieuw wachtwoord in te stellen.\n\n"
                  + url + "\n\n"
-                 + "Als jij dit niet was, neem dan contact met ons op via info@handboogsport.nl\n\n"
+                 + "Als jij dit niet was, neem dan contact met ons op het gebruikelijke e-mailadres.\n\n"
                  + "Veel plezier met de site!\n"
-                 + "Het bondsburo\n")
+                 + "Het webshop team\n")
 
     mailer_queue_email(accountemail.bevestigde_email, 'Wachtwoord vergeten', text_body)
 

@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 
-#  Copyright (c) 2019-2020 Ramon van der Winkel.
+#  Copyright (c) 2019-2021 Ramon van der Winkel.
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
 from django.db import models
-from django.conf import settings
-from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
-from Overig.tijdelijke_url import set_tijdelijke_url_receiver, maak_tijdelijke_url_account_email
-from Account.rechten import account_rechten_otp_controle_gelukt
+from Overig.tijdelijke_url import maak_tijdelijke_url_account_email
 from Mailer.models import mailer_email_is_valide
-import datetime
 
 
 class AccountCreateError(Exception):
@@ -53,15 +49,6 @@ class Account(AbstractUser):
     is_geblokkeerd_tot = models.DateTimeField(
                                     blank=True, null=True,
                                     help_text="Login niet mogelijk tot")
-
-    # rollen / functies
-    is_BB = models.BooleanField(
-                        default=False,
-                        help_text="Manager Competitiezaken")
-
-    is_Observer = models.BooleanField(
-                        default=False,
-                        help_text="Alleen observeren")
 
     # TOTP ondersteuning
     otp_code = models.CharField(
@@ -140,12 +127,6 @@ class AccountEmail(models.Model):
     optout_herinnering_taken = models.BooleanField(default=False)
     laatste_email_over_taken = models.DateTimeField(blank=True, null=True)
 
-    # functie koppeling
-    optout_functie_koppeling = models.BooleanField(default=False)
-
-    # klachten
-    optout_reactie_klacht = models.BooleanField(default=False)
-
     def __str__(self):
         """ Lever een tekstuele beschrijving van een database record, voor de admin interface """
         return "E-mail voor account '%s' (%s)" % (self.account.username,
@@ -155,30 +136,6 @@ class AccountEmail(models.Model):
         """ meta data voor de admin interface """
         verbose_name = "AccountEmail"
         verbose_name_plural = "AccountEmails"
-
-    objects = models.Manager()      # for the editor only
-
-
-class HanterenPersoonsgegevens(models.Model):
-    """ status van de vraag om juist om te gaan met persoonsgegevens,
-        voor de paar accounts waarvoor dit relevant is.
-    """
-
-    # het account waar dit record bij hoort
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-
-    # datum waarop de acceptatie voor het laatste gedaan is
-    acceptatie_datum = models.DateTimeField()
-
-    def __str__(self):
-        """ Lever een tekstuele beschrijving van een database record, voor de admin interface """
-        return "%s [%s]" % (str(self.acceptatie_datum),
-                            self.account.username)
-
-    class Meta:
-        """ meta data voor de admin interface """
-        verbose_name = "Hanteren Persoonsgegevens"
-        verbose_name_plural = "Hanteren Persoonsgegevens"
 
     objects = models.Manager()      # for the editor only
 
@@ -244,15 +201,13 @@ def account_check_gewijzigde_email(account):
 
         if email.nieuwe_email:
             if email.nieuwe_email != email.bevestigde_email:
-                # vraag om bevestiging van deze gewijzgde email
-                # email kan eerder overgenomen zijn uit de NHB administratie
-                # of handmatig ingevoerd zijn
+                # vraag om bevestiging van deze gewijzigde email
 
-                # blokkeer inlog totdat dit nieuwe emailadres bevestigd is
+                # blokkeer inlog totdat dit nieuwe e-mailadres bevestigd is
                 email.email_is_bevestigd = False
                 email.save()
 
-                # maak de url aan om het emailadres te bevestigen
+                # maak de url aan om het e-mailadres te bevestigen
                 # extra parameters are just to make the url unique
                 mailadres = email.nieuwe_email
                 url = maak_tijdelijke_url_account_email(email, username=account.username, email=mailadres)
@@ -267,7 +222,6 @@ VERBODEN_WOORDEN_IN_WACHTWOORD = (
     'password',
     'wachtwoord',
     'geheim',
-    'handboog',
     # keyboard walks
     '12345',
     '23456',

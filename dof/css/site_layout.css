@@ -25,16 +25,14 @@ a {
 
 /* kleuren */
 .dof-blauw {
-    background-color: #0aa0e1;   /* NHB medium blauw */
+    background-color: #0aa0e1;   /* medium blauw */
 }
 
 .dof-rood {
-    background-color: #f94137;   /* NHB hoofdkleur oranje */
+    background-color: #f94137;   /* hoofdkleur rood */
 }
 
 .dof-grijs {
-    /* standaard NHB achtergrondkleur is wat te donker
-    background-color: #f5f5f5;      grey lighten-4 == NHB achtergrondkleur */
     background-color: #eee;      /* grey lighten-3 */
 }
 

@@ -10,7 +10,6 @@ from django.test import TestCase
 from django.core.signals import request_started
 from django.db import DEFAULT_DB_ALIAS, connections, reset_queries
 from Account.models import Account, account_create
-from Functie.view_vhpg import account_vhpg_is_geaccepteerd
 from Overig.e2estatus import validated_templates, included_templates
 from bs4 import BeautifulSoup
 import subprocess
@@ -99,10 +98,6 @@ class E2EHelpers(object):
         self.client.logout()
 
     @staticmethod
-    def e2e_account_accepteert_vhpg(account):
-        account_vhpg_is_geaccepteerd(account)
-
-    @staticmethod
     def _remove_debugtoolbar(html):
         """ removes the debug toolbar code """
         pos = html.find('<link rel="stylesheet" href="/static/debug_toolbar/css/print.css"')
@@ -114,7 +109,7 @@ class E2EHelpers(object):
         lst = [tmpl.name for tmpl in response.templates if tmpl.name not in included_templates and not tmpl.name.startswith('django/forms')]
         return ", ".join(lst)
 
-    def e2e_create_account(self, username, email, voornaam, accepteer_vhpg=False):
+    def e2e_create_account(self, username, email, voornaam):
         """ Maak een Account met AccountEmail aan in de database van de website """
         account_create(username, voornaam, '', self.WACHTWOORD, email, True)
         account = Account.objects.get(username=username)
@@ -123,13 +118,10 @@ class E2EHelpers(object):
         account.otp_code = "whatever"
         account.otp_is_actief = True
         account.save()
-
-        if accepteer_vhpg:
-            self.e2e_account_accepteert_vhpg(account)
         return account
 
-    def e2e_create_account_admin(self, accepteer_vhpg=True):
-        account = self.e2e_create_account('admin', 'admin@test.com', 'Admin', accepteer_vhpg)
+    def e2e_create_account_admin(self):
+        account = self.e2e_create_account('admin', 'admin@test.com', 'Admin')
         # zet de benodigde vlaggen om admin te worden
         account.is_staff = True
         account.is_superuser = True

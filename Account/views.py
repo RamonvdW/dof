@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#  Copyright (c) 2019-2020 Ramon van der Winkel.
+#  Copyright (c) 2019-2021 Ramon van der Winkel.
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
@@ -47,12 +47,12 @@ def account_vraag_email_bevestiging(accountmail, **kwargs):
     url = maak_tijdelijke_url_account_email(accountmail, **kwargs)
 
     text_body = ("Hallo!\n\n"
-                 + "Je hebt een account aangemaakt op de website van de NHB.\n"
+                 + "Je hebt een account aangemaakt op de DOF website.\n"
                  + "Klik op onderstaande link om dit te bevestigen.\n\n"
                  + url + "\n\n"
-                 + "Als jij dit niet was, neem dan contact met ons op via info@handboogsport.nl\n\n"
+                 + "Als jij dit niet was, neem dan contact met ons op het support e-mail adres\n\n"
                  + "Veel plezier met de site!\n"
-                 + "Het bondsburo\n")
+                 + "Het website team\n")
 
     mailer_queue_email(accountmail.nieuwe_email, 'Aanmaken account voltooien', text_body)
 

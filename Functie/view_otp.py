@@ -11,7 +11,7 @@ from django.views.generic import TemplateView
 from Account.otp import account_otp_prepare_koppelen, account_otp_koppel, account_otp_controleer
 from .forms import OTPControleForm
 from .qrcode import qrcode_get
-import logging
+
 
 TEMPLATE_OTP_CONTROLE = 'functie/otp-controle.dtl'
 TEMPLATE_OTP_KOPPELEN = 'functie/otp-koppelen.dtl'

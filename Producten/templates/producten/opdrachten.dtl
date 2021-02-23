@@ -6,22 +6,19 @@
 {% endcomment %}
 {% load static %}
 
-{% block title %}Producten{% endblock %}
+{% block title %}Opdrachten{% endblock %}
 
 {% block pagina %}
 
-    <h4>Producten</h4>
+    {% include 'overig/site-feedback-sidebar.dtl' with op_pagina="opdrachten" %}
 
-    <p>Op deze pagina tonen we jouw producten.</p>
+    <h4>Opdrachten</h4>
 
-    <a class="btn-dof-blauw" href="{% url 'Plein:plein' %}">Sluit dit scherm</a>
+    <p>Op deze pagina tonen we de opdrachten die gemaakt zijn voor elk van de webshop e-mails.</p>
 
-    <form action="{% url 'Producten:nieuw-product' %}" method="post">
-        {% csrf_token %}
-        <p>Een nieuw product toevoegen kan met deze knop: <button class="btn-dof-blauw" type="submit"{% if is_staff %} disabled{% endif %}>
-            <i class="material-icons-round left">add</i>Toevoegen</button>
-        </p>
-    </form>
+    <p>
+        <a class="btn-dof-blauw" href="{% url 'Plein:plein' %}">Sluit dit scherm</a>
+    </p>
 
     {% if is_paginated %}
         <ul class="pagination">
@@ -47,10 +44,9 @@
         <thead>
             <tr>
                 {% if is_staff %}<th>Eigenaar</th>{% endif %}
-                <th>Product</th>
-                <th>Taal</th>
-                <th>Bestand</th>
-                <th>Handmatig</th>
+                <th>Wanneer</th>
+                <th>Status</th>
+                <th>Producten</th>
                 <th><!-- kolom voor knoppen --></th>
             </tr>
         </thead>
@@ -58,12 +54,34 @@
         {% for obj in object_list %}
             <tr>
                 {% if is_staff %}<td>{{ obj.eigenaar.get_first_name }}</td>{% endif %}
-                <td>{{ obj.korte_beschrijving }}</td>
-                <td>{{ obj.taal_lang }}</td>
-                <td>{% if obj.bestand_ok %}<i class="material-icons-round green-text">done</i>{% else %}<i class="material-icons-round red-text">warning</i>{% endif %}</td>
-                <td>{% if obj.handmatig_vrijgeven %}Ja{% else %}Nee{% endif %}</td>
+                <td>{{ obj.aangemaakt_op }}</td>
+
                 <td>
-                    <a class="btn-dof-blauw" href="{{ obj.url_wijzig }}">Wijzig</a>
+                    {% if obj.is_afgehandeld %}
+                        <span class="green-text">Is gedownload</span>
+                    {% elif obj.is_vrijgegeven_voor_levering %}
+                        <span>Mail is verstuurd; wacht op download</span>
+                    {% else %}
+                        <span class="red-text">Wacht op vrijgave</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% for prod in obj.producten.all %}
+                        <span>{{ prod.korte_beschrijving }}</span><br>
+                    {% empty %}
+                        <span class="red-text">Geen!</span>
+                    {% endfor %}
+                </td>
+
+                <td>
+                    {% if obj.is_afgehandled %}
+                        <a class="btn-dof-blauw" href="{{ obj.url_bekijk }}">Bekijk</a>
+                    {% elif obj.is_vrijgegeven_voor_levering %}
+                        <a class="btn-dof-blauw" href="{{ obj.url_bekijk }}">Bekijk</a>
+                    {% else %}
+                        <a class="btn-dof-rood" href="{{ obj.url_bekijk }}">Behandel</a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}
@@ -73,7 +91,5 @@
     <p>
         <a class="btn-dof-blauw" href="{% url 'Plein:plein' %}">Sluit dit scherm</a>
     </p>
-
-    {% include 'overig/site-feedback-sidebar.dtl' with op_pagina="producten" %}
 
 {% endblock %}

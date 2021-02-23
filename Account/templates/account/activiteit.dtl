@@ -16,6 +16,10 @@
 
     <p>Er zijn {{ totaal }} accounts aangemaakt op deze server.</p>
 
+    <p>
+        <a class="btn-dof-blauw" href="{% url 'Plein:plein' %}">Terug</a>
+    </p>
+
     <h5 id="recent">Recente activiteit</h5>
 
     <p>Hieronder staan accounts waar recent op ingelogd is (maximaal 50)</p>
