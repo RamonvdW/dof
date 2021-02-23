@@ -201,7 +201,7 @@ class Command(BaseCommand):
                 line_nr += 2
 
                 if key in items:
-                    my_logger.error('Inbox pk=%s geeft onverwacht een dupe item' % (inbox.pk, repr(key)))
+                    my_logger.error('Inbox pk=%s geeft onverwacht een dupe item (key=%s)' % (inbox.pk, repr(key)))
                 else:
                     items[key] = value
             else:
