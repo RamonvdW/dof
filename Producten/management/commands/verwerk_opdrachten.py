@@ -104,7 +104,9 @@ class Command(BaseCommand):
                             levering.save()
 
                         url = settings.SITE_URL + '/code/%s/' % levering.url_code
-                        prod_links.append('%s: %s' % (prod.korte_beschrijving, url))
+                        link = '%s: %s' % (prod.korte_beschrijving, url)
+                        if link not in prod_links:
+                            prod_links.append(link)
                     else:
                         self.stderr.write('[ERROR] Kan bestand %s niet vinden' % repr(fpath))
 
@@ -201,7 +203,7 @@ class Command(BaseCommand):
                 line_nr += 2
 
                 if key in items:
-                    my_logger.error('Inbox pk=%s geeft onverwacht een dupe item (key=%s)' % (inbox.pk, repr(key)))
+                    my_logger.warning('Inbox pk=%s geeft onverwacht een dupe item (key=%s)' % (inbox.pk, repr(key)))
                 else:
                     items[key] = value
             else:
