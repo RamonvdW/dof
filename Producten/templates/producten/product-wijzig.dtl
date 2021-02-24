@@ -43,7 +43,7 @@
             </tr>
 
             <tr>
-                <td>Welke taal gebruiken bij uitsturen?</td>
+                <td>Taal van dit product</td>
                 <td>
                     <select form="edit-form" name="taal">
                         {% for taal in talen %}
@@ -74,7 +74,7 @@
             </tr>
 
             <tr>
-                <td>Specifieke teksten waarop dit product gekozen moet worden:<br><br>
+                <td>Specifieke teksten waarop dit product geselecteerd moet worden:<br><br>
                 <span>(maar 1 van deze teksten hoeft gevonden te worden)</span></td>
                 <td>
                     <input form="edit-form" type="text" name="match1" maxlength="100" value="{{ product.match_1 }}"><br>
