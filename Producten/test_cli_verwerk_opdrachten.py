@@ -29,7 +29,12 @@ class TestProductenCliVerwerkOpdrachten(E2EHelpers, TestCase):
             # Francis
             ('PDF Tricot top Francis', 'NL', 'PDF Tricot top Francis', 'PDF Shirt Francis', 'PDF Jersey tee Francis'),
             ('PDF Shirt Francis',      'DU', 'PDF Tricot top Francis', 'PDF Shirt Francis', 'PDF Jersey tee Francis'),
-            ('PDF Jersey tee Francis', 'EN', 'PDF Tricot top Francis', 'PDF Shirt Francis', 'PDF Jersey tee Francis')
+            ('PDF Jersey tee Francis', 'EN', 'PDF Tricot top Francis', 'PDF Shirt Francis', 'PDF Jersey tee Francis'),
+
+            # Zak
+            ('PDF zijnaad zak',        'NL', 'PDF zijnaad zak', 'PDF Seitennaht Tasche', 'PDF sideseam pocket'),
+            ('PDF Seitennaht Tasche',  'DU', 'PDF zijnaad zak', 'PDF Seitennaht Tasche', 'PDF sideseam pocket'),
+            ('PDF sideseam pocket',    'EN', 'PDF zijnaad zak', 'PDF Seitennaht Tasche', 'PDF sideseam pocket')
         )
 
         for kort, taal, match1, match2, match3 in producten:
@@ -130,5 +135,9 @@ class TestProductenCliVerwerkOpdrachten(E2EHelpers, TestCase):
 
     def test_07(self):
         self._test_opdracht(7, 'EN', (('DU', 'PDF Shirt Francis'),))
+
+    def test_08(self):
+        self._test_opdracht(8, 'NL', (('NL', 'PDF Rok Erna'),
+                                      ('NL', 'PDF zijnaad zak'),))
 
 # end of file

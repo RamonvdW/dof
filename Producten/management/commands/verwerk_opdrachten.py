@@ -264,6 +264,120 @@ class Command(BaseCommand):
 
         return self._maak_opdracht(inbox, items, order, template_taal)
 
+    def _verwerk_mail_html(self, inbox, html):
+        html = html.replace('\r\n', ' ')
+        html = html.replace('\xa0', ' ')
+
+        # begin bij een keyword in een heading
+        pos1 = html.find('aantal')
+        if pos1 < 0:
+            # belangrijke info niet kunnen vinden
+            return False
+
+        # pak alles tot het einde van een table body
+        pos2 = html.find('</tbody>', pos1)
+        body = html[pos1:pos2]
+
+        # doorloop het gekozen deel van de body
+        lines = list()
+        while len(body):
+            if body[0] != '<':
+                tag_start = body.find('<')
+                if tag_start < 0:
+                    body = ''
+                else:
+                    data = body[:tag_start].strip()
+                    if data:
+                        # print('data: %s' % repr(data))
+                        lines.append(data)
+                    body = body[tag_start:]
+                    continue
+
+            tag_end = body.find('>')
+            # tag = body[:tag_end+1]
+            body = body[tag_end + 1:]
+        # while
+
+        # print('lines: %s' % repr(lines))
+
+        # zoek de key-value pairs
+        items = dict()
+        eerste_nr = len(lines)
+        for nr in range(len(lines) - 1):
+            line = lines[nr]
+            if line[-1] == ':':
+                eerste_nr = min(eerste_nr, nr)
+                key = line[:-1]     # verwijder de dubbele punt
+                value = lines[nr + 1]
+
+                if key in items:
+                    my_logger.warning('Inbox pk=%s geeft onverwacht een dupe item (key=%s)' % (inbox.pk, repr(key)))
+                else:
+                    items[key] = value
+        # for
+        # print('items: %s' % repr(items))
+
+        # kap de items weg van de regels waarin de producten staan
+        # print('eerste_nr: %s' % eerste_nr)
+        if eerste_nr < 1:
+            return False
+        lines = lines[:eerste_nr - 1]
+        # print('lines: %s' % repr(lines))
+
+        prods = list()
+        prod = None
+        for nr in range(len(lines)):
+            if lines[nr] == '1 x':
+                # begin van een nieuw product
+                prod = list()
+                prods.append(prod)
+
+            if prod is not None:
+                prod.append(lines[nr])
+        # for
+
+        order = list()
+        for prod in prods:
+            regel = " ".join(prod)
+
+            gevonden_taal = None
+            for taal_code, taal_label in (('NL', 'Sprache: Nederlands '),
+                                          ('DU', 'Sprache: Deutsch '),
+                                          ('EN', 'Sprache: English '),
+                                          ('NL', 'Taal E-book: Nederlands '),
+                                          ('DU', 'Taal E-book: Deutsch '),
+                                          ('EN', 'Taal E-book: English '),
+                                          ('NL', 'Language: Nederlands '),
+                                          ('DU', 'Language: Deutsch '),
+                                          ('EN', 'Language: English '),
+                                          ):
+                if taal_label in regel:
+                    gevonden_taal = taal_code
+            # for
+
+            # special cases, als er geen taal aangegeven is
+            if not gevonden_taal:
+                if 'Subtotal (incl. VAT)' in html:
+                    gevonden_taal = 'EN'
+                elif 'Subtotaal (incl. btw)' in html:
+                    gevonden_taal = 'NL'
+
+            tup = (gevonden_taal, regel)
+            # print('order: %s' % repr(tup))
+            order.append(tup)
+        # for
+
+        # in welke taal moeten we de e-mail sturen?
+        if "Zwischensumme" in html and "Insgesamt" in html:
+            template_taal = 'DU'
+        elif "Totaal" in html and "Subtotaal" in html:
+            template_taal = 'NL'
+        else:
+            template_taal = 'EN'
+        # print('template_taal: %s' % template_taal)
+
+        return self._maak_opdracht(inbox, items, order, template_taal)
+
     def _verwerk_ontvangen_mails(self):
         for obj in Inbox.objects.filter(is_verwerkt=False):
             try:
@@ -273,11 +387,17 @@ class Command(BaseCommand):
                 obj.is_verwerkt = True
                 obj.save()
             else:
-                # haal de plain-text uit de mail en ignore de rest
-                body = data['TextBody']
-                if self._verwerk_mail_body(obj, body):
+                # gebruik de html-text versie uit de mail en ignore de rest
+                html = data['HtmlBody']
+                if self._verwerk_mail_html(obj, html):
                     obj.is_verwerkt = True
                     obj.save()
+
+                # haal de plain-text uit de mail en ignore de rest
+                # body = data['TextBody']
+                # if self._verwerk_mail_body(obj, body):
+                #     obj.is_verwerkt = True
+                #     obj.save()
         # for
 
     def _monitor_nieuwe_mutaties(self):
