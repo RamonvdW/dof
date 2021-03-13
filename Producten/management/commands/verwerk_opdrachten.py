@@ -80,6 +80,7 @@ class Command(BaseCommand):
         prod_links = list()
         # zoek matchende producten
         for taal, regel in order:
+            # print('taal: %s, regel: %s' % (taal, repr(regel)))
             for prod in (Product
                          .objects
                          .filter(eigenaar=opdracht.eigenaar,
@@ -361,6 +362,10 @@ class Command(BaseCommand):
                     gevonden_taal = 'EN'
                 elif 'Subtotaal (incl. btw)' in html:
                     gevonden_taal = 'NL'
+                elif 'Insgesamt inkl. MwSt.' in html:
+                    gevonden_taal = 'DU'
+                else:
+                    my_logger.error('Geen taal keuze voor product %s uit inbox pk=%s' % (repr(regel), inbox.pk))
 
             tup = (gevonden_taal, regel)
             # print('order: %s' % repr(tup))
