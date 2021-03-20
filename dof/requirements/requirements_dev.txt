@@ -22,33 +22,33 @@ chardet==4.0.0
     # via
     #   -r requirements.txt
     #   requests
-coverage==5.4
+coverage==5.5
     # via -r requirements_dev.in
 django-debug-toolbar==3.2
     # via -r requirements_dev.in
 django-extensions==3.1.1
     # via -r requirements_dev.in
-django==3.0.12
+django==3.0.13
     # via
     #   -r requirements.txt
     #   django-debug-toolbar
-google-api-core==1.26.0
+google-api-core==1.26.1
     # via
     #   -r requirements.txt
     #   google-api-python-client
-google-api-python-client==1.12.8
+google-api-python-client==2.0.2
     # via -r requirements.txt
-google-auth-httplib2==0.0.4
+google-auth-httplib2==0.1.0
     # via
     #   -r requirements.txt
     #   google-api-python-client
-google-auth==1.26.1
+google-auth==1.28.0
     # via
     #   -r requirements.txt
     #   google-api-core
     #   google-api-python-client
     #   google-auth-httplib2
-googleapis-common-protos==1.52.0
+googleapis-common-protos==1.53.0
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -68,11 +68,11 @@ packaging==20.9
     #   -r requirements.txt
     #   google-api-core
     #   pip-review
-pip-licenses==3.3.0
+pip-licenses==3.3.1
     # via -r requirements_dev.in
 pip-review==1.1.0
     # via -r requirements_dev.in
-protobuf==3.14.0
+protobuf==3.15.6
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -108,7 +108,7 @@ requests==2.25.1
     # via
     #   -r requirements.txt
     #   google-api-core
-rsa==4.7.1
+rsa==4.7.2
     # via
     #   -r requirements.txt
     #   google-auth
@@ -121,7 +121,7 @@ six==1.15.0
     #   google-auth-httplib2
     #   protobuf
     #   qrcode
-soupsieve==2.2
+soupsieve==2.2.1
     # via beautifulsoup4
 sqlparse==0.4.1
     # via
@@ -132,7 +132,7 @@ uritemplate==3.0.1
     # via
     #   -r requirements.txt
     #   google-api-python-client
-urllib3==1.26.3
+urllib3==1.26.4
     # via
     #   -r requirements.txt
     #   requests
