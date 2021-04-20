@@ -105,7 +105,8 @@ class E2EHelpers(object):
             html = html[:pos] + '<!-- removed debug toolbar --></body></html>'
         return html
 
-    def _get_useful_template_name(self, response):
+    @staticmethod
+    def _get_useful_template_name(response):
         lst = [tmpl.name for tmpl in response.templates if tmpl.name not in included_templates and not tmpl.name.startswith('django/forms')]
         return ", ".join(lst)
 
@@ -333,6 +334,10 @@ class E2EHelpers(object):
             pos = script.find('console.log')
             if pos >= 0:
                 self.fail(msg='Detected console.log usage in script from template %s' % template_name)   # pragma: no cover
+
+            pos = script.find('/*')
+            if pos >= 0:
+                self.fail(msg='Found block comment in script from template %s' % template_name)     # pragma: no cover
 
             html = html[pos+9:]
             pos = html.find('<script ')

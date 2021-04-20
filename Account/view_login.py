@@ -154,10 +154,11 @@ class LoginView(TemplateView):
         from_ip = get_safe_from_ip(self.request)
         login_naam = form.cleaned_data.get('login_naam')
         wachtwoord = form.cleaned_data.get('wachtwoord')
-        next = form.cleaned_data.get('next')
+        next_url = form.cleaned_data.get('next')
 
         # controleer het wachtwoord
-        if not authenticate(username=account.username, password=wachtwoord):
+        account2 = authenticate(username=account.username, password=wachtwoord)
+        if not account2:
             # authenticatie is niet gelukt
             # reden kan zijn: verkeerd wachtwoord of is_active=False
 
@@ -188,6 +189,7 @@ class LoginView(TemplateView):
             return None
 
         # wachtwoord is goed
+        account = account2
 
         # kijk of er een reden is om gebruik van het account te weren
         for _, func in account_plugins_login:
@@ -215,18 +217,18 @@ class LoginView(TemplateView):
         account_rechten_login_gelukt(self.request)
 
         # voer de automatische redirect uit, indien gevraagd
-        if next:
+        if next_url:
             # reject niet bestaande urls
             # resolve zoekt de view die de url af kan handelen
-            if next[-1] != '/':
-                next += '/'
+            if next_url[-1] != '/':
+                next_url += '/'
             try:
-                resolve(next)
+                resolve(next_url)
             except Resolver404:
                 pass
             else:
                 # is valide url
-                return HttpResponseRedirect(next)
+                return HttpResponseRedirect(next_url)
 
         if account.otp_is_actief:
             return HttpResponseRedirect(reverse('Functie:otp-controle'))
@@ -244,12 +246,12 @@ class LoginView(TemplateView):
         if form.is_valid():
 
             response, account = self._zoek_account(form)
+            if response:
+                # account is geblokkeerd
+                return response
+
             if account:
                 # account bestaat
-                if response:
-                    # account is geblokkeerd
-                    return response
-
                 response = self._probeer_login(form, account)
                 if response:
                     # inlog gelukt of eruit geknikkerd met foutmelding

@@ -11,8 +11,7 @@
 from Mailer import mailer
 from Mailer.models import MailQueue
 from django.core.management.base import BaseCommand
-from django.db.models import ProtectedError
-import django.db.utils
+from django.db.utils import DataError
 import datetime
 import time
 
@@ -35,7 +34,10 @@ class Command(BaseCommand):
     def _stuur_oude_mails(self):
         # probeer eenmalig oude mails te sturen en keer daarna terug
         send_count = 0
-        for obj in MailQueue.objects.filter(is_verstuurd=False, aantal_pogingen__lt=25):
+        for obj in (MailQueue
+                    .objects
+                    .filter(is_verstuurd=False,
+                            aantal_pogingen__lt=25)):
             mailer.send_mail(obj, self.stdout, self.stderr)
             send_count += 1
 
@@ -52,7 +54,10 @@ class Command(BaseCommand):
         now = datetime.datetime.now()
         while now < self.stop_at:
 
-            objs = MailQueue.objects.filter(is_verstuurd=False, aantal_pogingen=0)
+            objs = (MailQueue
+                    .objects
+                    .filter(is_verstuurd=False,
+                            aantal_pogingen=0))
             if len(objs):
                 obj = objs[0]
                 mailer.send_mail(obj, self.stdout, self.stderr)
@@ -92,7 +97,7 @@ class Command(BaseCommand):
             if not options['skip_old']:
                 self._stuur_oude_mails()
             self._stuur_nieuwe_mails()
-        except django.db.utils.DataError as exc:        # pragma: no coverage
+        except DataError as exc:                        # pragma: no coverage
             self.stderr.write('[ERROR] Onverwachte database fout: %s' % str(exc))
         except KeyboardInterrupt:                       # pragma: no coverage
             pass
