@@ -10,11 +10,11 @@ asgiref==3.3.4
     #   django
 beautifulsoup4==4.9.3
     # via -r requirements_dev.in
-cachetools==4.2.1
+cachetools==4.2.2
     # via
     #   -r requirements.txt
     #   google-auth
-certifi==2020.12.5
+certifi==2021.5.30
     # via
     #   -r requirements.txt
     #   requests
@@ -28,22 +28,22 @@ django-debug-toolbar==3.2.1
     # via -r requirements_dev.in
 django-extensions==3.1.3
     # via -r requirements_dev.in
-django==3.1.8
+django==3.1.12
     # via
     #   -r requirements.txt
     #   django-debug-toolbar
     #   django-extensions
-google-api-core==1.26.3
+google-api-core==1.29.0
     # via
     #   -r requirements.txt
     #   google-api-python-client
-google-api-python-client==2.2.0
+google-api-python-client==2.7.0
     # via -r requirements.txt
 google-auth-httplib2==0.1.0
     # via
     #   -r requirements.txt
     #   google-api-python-client
-google-auth==1.29.0
+google-auth==1.30.1
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -53,7 +53,7 @@ googleapis-common-protos==1.53.0
     # via
     #   -r requirements.txt
     #   google-api-core
-html5validator==0.3.3
+html5validator==0.4.0
     # via -r requirements_dev.in
 httplib2==0.19.1
     # via
@@ -69,11 +69,11 @@ packaging==20.9
     #   -r requirements.txt
     #   google-api-core
     #   pip-review
-pip-licenses==3.3.1
+pip-licenses==3.4.0
     # via -r requirements_dev.in
 pip-review==1.1.0
     # via -r requirements_dev.in
-protobuf==3.15.8
+protobuf==3.17.2
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -103,6 +103,8 @@ pytz==2021.1
     #   -r requirements.txt
     #   django
     #   google-api-core
+pyyaml==5.4.1
+    # via html5validator
 qrcode==6.1
     # via -r requirements.txt
 requests==2.25.1
@@ -113,7 +115,7 @@ rsa==4.7.2
     # via
     #   -r requirements.txt
     #   google-auth
-six==1.15.0
+six==1.16.0
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -129,7 +131,7 @@ sqlparse==0.4.1
     #   -r requirements.txt
     #   django
     #   django-debug-toolbar
-typing-extensions==3.7.4.3
+typing-extensions==3.10.0.0
     # via
     #   -r requirements.txt
     #   asgiref
@@ -137,7 +139,7 @@ uritemplate==3.0.1
     # via
     #   -r requirements.txt
     #   google-api-python-client
-urllib3==1.26.4
+urllib3==1.26.5
     # via
     #   -r requirements.txt
     #   requests
