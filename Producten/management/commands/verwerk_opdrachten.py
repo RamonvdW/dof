@@ -77,8 +77,10 @@ class Command(BaseCommand):
         opdracht.regels += '\n\nGekozen taal voor de levering: %s' % template_taal
         opdracht.save()
 
-        prod_links = list()
+        opdracht.is_vrijgegeven_voor_levering = True
+
         # zoek matchende producten
+        prod_links = list()
         for taal, regel in order:
             # print('taal: %s, regel: %s' % (taal, repr(regel)))
             for prod in (Product
@@ -153,7 +155,6 @@ class Command(BaseCommand):
             mailer_queue_email(opdracht.to_email,
                                opdracht.subject,
                                opdracht.mail_body)
-            opdracht.save()
 
         # success
         return True
