@@ -69,6 +69,12 @@
                                 <span>Nee (ik wil deze handmatig goedkeuren)</span>
                             </label>
                         </li>
+                        <li>
+                            <label class="black-text" for="id_radio_3">
+                                <input form="edit-form" class="with-gap" type="radio" name="bevinding" value="3" required id="id_radio_3"{% if check_3 %} checked{% endif %}>
+                                <span>Dit is geen digitaal product</span>
+                            </label>
+                        </li>
                     </ul>
                 </td>
             </tr>

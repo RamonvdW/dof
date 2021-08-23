@@ -192,7 +192,9 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
 
         context['product'] = product
 
-        if product.handmatig_vrijgeven:
+        if product.papieren_product:
+            context['check_3'] = True
+        elif product.handmatig_vrijgeven:
             context['check_2'] = True
         else:
             context['check_1'] = True
@@ -250,6 +252,7 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
 
                 bevinding = request.POST.get('bevinding')
                 product.handmatig_vrijgeven = (bevinding == '2')
+                product.papieren_product = (bevinding == '3')
             except KeyError:
                 raise Resolver404()
 

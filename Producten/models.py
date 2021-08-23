@@ -37,6 +37,9 @@ class Product(models.Model):
     # in welke taal is dit bericht
     taal = models.CharField(max_length=2, choices=TALEN, default=TALEN[0][0])
 
+    # product dat niet digitaal is en dus niet verstuurd hoeft te worden
+    papieren_product = models.BooleanField(default=False)
+
     # naam van het bestand (niet het pad, alleen de naam)
     naam_bestand = models.CharField(max_length=100, default='', blank=True)
 

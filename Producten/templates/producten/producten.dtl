@@ -60,8 +60,18 @@
                 {% if is_staff %}<td>{{ obj.eigenaar.get_first_name }}</td>{% endif %}
                 <td>{{ obj.korte_beschrijving }}</td>
                 <td>{{ obj.taal_lang }}</td>
-                <td>{% if obj.bestand_ok %}<i class="material-icons-round green-text">done</i>{% else %}<i class="material-icons-round red-text">warning</i>{% endif %}</td>
-                <td>{% if obj.handmatig_vrijgeven %}Ja{% else %}Nee{% endif %}</td>
+                <td>
+                    {% if obj.papieren_product %}
+                        <i>Niet digitaal</i>
+                    {% else %}
+                        {% if obj.bestand_ok %}
+                            <i class="material-icons-round green-text">done</i>
+                        {% else %}
+                            <i class="material-icons-round red-text">warning</i>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td>{% if obj.papieren_product %}-{% elif obj.handmatig_vrijgeven %}Ja{% else %}Nee{% endif %}</td>
                 <td>
                     <a class="btn-dof-blauw" href="{{ obj.url_wijzig }}">Wijzig</a>
                 </td>
