@@ -121,7 +121,7 @@ class Command(BaseCommand):
         if len(prod_links) == 0:
             # geen producten kunnen matchen
             opdracht.is_vrijgegeven_voor_levering = False
-            my_logger.warning('Opdracht pk=%s niet kunnen koppelen aan een product' % opdracht.pk)
+            # te vaak.. my_logger.warning('Opdracht pk=%s niet kunnen koppelen aan een product' % opdracht.pk)
             opdracht.save()
             return False        # faal
 
