@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     """ Migratie class voor dit deel van de applicatie """
 
-    # dit is de eerste
+    # volgorde afdwingen
     dependencies = [
         ('Producten', 'm0006_download_count'),
     ]

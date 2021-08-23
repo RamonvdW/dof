@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     """ Migratie class voor dit deel van de applicatie """
 
-    # dit is de eerste
+    # volgorde afdwingen
     dependencies = [
         ('Mailer', 'm0002_inbox'),
         ('Producten', 'm0001_initial'),
