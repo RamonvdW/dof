@@ -63,6 +63,8 @@
             <td>
                 {% if opdracht.is_afgehandled %}
                     <span>Afgehandeld</span>
+                {% elif opdracht.is_papieren_levering %}
+                    <span>Geen digitaal product</span>
                 {% elif opdracht.is_vrijgegeven_voor_levering %}
                     <span>Klaar voor digitale levering</span>
                 {% else %}

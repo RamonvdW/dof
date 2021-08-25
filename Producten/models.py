@@ -119,6 +119,9 @@ class Opdracht(models.Model):
     # gekoppelde producten
     producten = models.ManyToManyField(Product, blank=True)
 
+    # is papieren product
+    is_papieren_levering = models.BooleanField(default=False)
+
     # vrijgegeven voor levering?
     is_vrijgegeven_voor_levering = models.BooleanField(default=False)
 

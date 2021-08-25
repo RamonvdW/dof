@@ -80,6 +80,7 @@ class Command(BaseCommand):
         opdracht.is_vrijgegeven_voor_levering = True
 
         # zoek matchende producten
+        papieren_product_gevonden = False
         prod_links = list()
         for taal, regel in order:
             # print('taal: %s, regel: %s' % (taal, repr(regel)))
@@ -88,40 +89,56 @@ class Command(BaseCommand):
                          .filter(eigenaar=opdracht.eigenaar,
                                  taal=taal)):
                 if prod.is_match(regel):
-                    # controleer dat het bestand bestaat, anders niet leveren
-                    fpath, _ = get_path_to_product_bestand(prod)
-                    if os.path.exists(fpath):
+                    # match!
+                    if prod.papieren_product:
+                        # niet digitaal te leveren
                         opdracht.producten.add(prod)
-
-                        # levering aanmaken (of hergebruiken)
-                        try:
-                            levering = Levering.objects.get(opdracht=opdracht,
-                                                            product=prod)
-                        except Levering.DoesNotExist:
-                            levering = Levering(opdracht=opdracht,
-                                                product=prod,
-                                                eigenaar=opdracht.eigenaar,
-                                                to_email=email)
-                            levering.maak_url_code()
-                            levering.download_count = settings.DOWNLOAD_CREDITS
-                            levering.save()
-
-                        url = settings.SITE_URL + '/code/%s/' % levering.url_code
-                        link = '%s: %s' % (prod.korte_beschrijving, url)
-                        if link not in prod_links:
-                            prod_links.append(link)
+                        papieren_product_gevonden = True
+                        break   # from the for
                     else:
-                        self.stderr.write('[ERROR] Kan bestand %s niet vinden' % repr(fpath))
+                        # controleer dat het bestand bestaat, anders niet leveren
+                        fpath, _ = get_path_to_product_bestand(prod)
+                        if os.path.exists(fpath):
+                            opdracht.producten.add(prod)
 
-                    if prod.handmatig_vrijgeven:
-                        opdracht.is_vrijgegeven_voor_levering = False
+                            # levering aanmaken (of hergebruiken)
+                            try:
+                                levering = Levering.objects.get(opdracht=opdracht,
+                                                                product=prod)
+                            except Levering.DoesNotExist:
+                                levering = Levering(opdracht=opdracht,
+                                                    product=prod,
+                                                    eigenaar=opdracht.eigenaar,
+                                                    to_email=email)
+                                levering.maak_url_code()
+                                levering.download_count = settings.DOWNLOAD_CREDITS
+                                levering.save()
+
+                            url = settings.SITE_URL + '/code/%s/' % levering.url_code
+                            link = '%s: %s' % (prod.korte_beschrijving, url)
+                            if link not in prod_links:
+                                prod_links.append(link)
+                        else:
+                            self.stderr.write('[ERROR] Kan bestand %s niet vinden' % repr(fpath))
+
+                        if prod.handmatig_vrijgeven:
+                            opdracht.is_vrijgegeven_voor_levering = False
             # for
         # for
 
         if len(prod_links) == 0:
-            # geen producten kunnen matchen
             opdracht.is_vrijgegeven_voor_levering = False
             # te vaak.. my_logger.warning('Opdracht pk=%s niet kunnen koppelen aan een product' % opdracht.pk)
+
+            if papieren_product_gevonden:
+                # we hebben een match gehad op een papieren product
+                # verder geen matches, dus deze kan helemaal weg
+                opdracht.is_papieren_levering = True
+                opdracht.is_afgehandeld = True
+                opdracht.save()
+                return True     # success
+
+            # geen producten kunnen matchen
             opdracht.save()
             return False        # faal
 

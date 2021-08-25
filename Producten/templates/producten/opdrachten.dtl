@@ -58,7 +58,11 @@
 
                 <td>
                     {% if obj.is_afgehandeld %}
-                        <span class="green-text">Is gedownload</span>
+                        {% if obj.is_papieren_levering %}
+                            <span class="green-text">Geen digital levering</span>
+                        {% else %}
+                            <span class="green-text">Is gedownload</span>
+                        {% endif %}
                     {% elif obj.is_vrijgegeven_voor_levering %}
                         <span>Mail is verstuurd; wacht op download</span>
                     {% else %}
@@ -75,7 +79,7 @@
                 </td>
 
                 <td>
-                    {% if obj.is_afgehandled %}
+                    {% if obj.is_afgehandeld %}
                         <a class="btn-dof-blauw" href="{{ obj.url_bekijk }}">Bekijk</a>
                     {% elif obj.is_vrijgegeven_voor_levering %}
                         <a class="btn-dof-blauw" href="{{ obj.url_bekijk }}">Bekijk</a>
