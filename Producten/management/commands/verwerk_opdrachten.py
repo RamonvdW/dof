@@ -346,7 +346,7 @@ class Command(BaseCommand):
         prods = list()
         prod = None
         for nr in range(len(lines)):
-            if lines[nr] == '1 x':
+            if lines[nr] in ('1 x', '2 x', '3 x', '4 x'):
                 # begin van een nieuw product
                 prod = list()
                 prods.append(prod)
