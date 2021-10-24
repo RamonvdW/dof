@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.views.generic import ListView, TemplateView, View
 from django.contrib.auth.mixins import UserPassesTestMixin
+from Account.rechten import account_rechten_is_otp_verified
 from Mailer.models import Inbox, mailer_queue_email
 from Overig.background_sync import BackgroundSync
 from .models import Opdracht
@@ -35,7 +36,7 @@ class OpdrachtenView(UserPassesTestMixin, ListView):
 
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
-        return self.request.user.is_authenticated
+        return self.request.user.is_authenticated and account_rechten_is_otp_verified(self.request)
 
     def handle_no_permission(self):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
@@ -119,7 +120,7 @@ class OpdrachtDetailsView(UserPassesTestMixin, TemplateView):
 
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
-        return self.request.user.is_authenticated
+        return self.request.user.is_authenticated and account_rechten_is_otp_verified(self.request)
 
     def handle_no_permission(self):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
@@ -184,7 +185,7 @@ class OpdrachtOpnieuwAnalyserenView(UserPassesTestMixin, View):
 
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
-        return self.request.user.is_authenticated
+        return self.request.user.is_authenticated and account_rechten_is_otp_verified(self.request)
 
     def handle_no_permission(self):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
@@ -251,7 +252,7 @@ class OpdrachtVrijgevenView(UserPassesTestMixin, View):
 
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
-        return self.request.user.is_authenticated
+        return self.request.user.is_authenticated and account_rechten_is_otp_verified(self.request)
 
     def handle_no_permission(self):
         """ gebruiker heeft geen toegang --> redirect naar het plein """

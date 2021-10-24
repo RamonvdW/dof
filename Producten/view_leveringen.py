@@ -5,8 +5,11 @@
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
 from django.conf import settings
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse
 from django.views.generic import ListView, View, TemplateView
+from django.contrib.auth.mixins import UserPassesTestMixin
+from Account.rechten import account_rechten_is_otp_verified
 from django.http import HttpResponse
 from Mailer.models import mailer_email_is_valide
 from Overig.helpers import get_safe_from_ip
@@ -22,12 +25,20 @@ TEMPLATE_LEVERING_EMAIL_INVOEREN = 'producten/levering-email-invoeren.dtl'
 my_logger = logging.getLogger('DOF.Levering')
 
 
-class LeveringenView(ListView):
+class LeveringenView(UserPassesTestMixin, ListView):
 
     template_name = TEMPLATE_LEVERINGEN_LIJST
 
     # TODO: pagination support
     # TODO: zoek/filter mogelijkheden
+
+    def test_func(self):
+        """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
+        return self.request.user.is_authenticated and account_rechten_is_otp_verified(self.request)
+
+    def handle_no_permission(self):
+        """ gebruiker heeft geen toegang --> redirect naar het plein """
+        return HttpResponseRedirect(reverse('Plein:plein'))
 
     def get_queryset(self):
         if self.request.user.is_staff:

@@ -4,11 +4,12 @@
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
-from django.shortcuts import reverse
-from django.contrib.auth.mixins import UserPassesTestMixin
-from django.views.generic import ListView, TemplateView, View
 from django.urls import Resolver404
 from django.http import HttpResponseRedirect
+from django.shortcuts import reverse
+from django.views.generic import ListView, TemplateView, View
+from django.contrib.auth.mixins import UserPassesTestMixin
+from Account.rechten import account_rechten_is_otp_verified
 from .models import Product, TALEN, get_path_to_product_bestand
 from types import SimpleNamespace
 import logging
@@ -33,7 +34,7 @@ class ProductenView(UserPassesTestMixin, ListView):
 
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
-        return self.request.user.is_authenticated
+        return self.request.user.is_authenticated and account_rechten_is_otp_verified(self.request)
 
     def handle_no_permission(self):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
@@ -132,7 +133,7 @@ class NieuwProductView(UserPassesTestMixin, View):
 
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
-        return self.request.user.is_authenticated
+        return self.request.user.is_authenticated and account_rechten_is_otp_verified(self.request)
 
     def handle_no_permission(self):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
@@ -159,7 +160,7 @@ class WijzigProductView(UserPassesTestMixin, TemplateView):
 
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
-        return self.request.user.is_authenticated
+        return self.request.user.is_authenticated and account_rechten_is_otp_verified(self.request)
 
     def handle_no_permission(self):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
@@ -267,7 +268,7 @@ class UploadView(UserPassesTestMixin, View):
 
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
-        return self.request.user.is_authenticated
+        return self.request.user.is_authenticated and account_rechten_is_otp_verified(self.request)
 
     def handle_no_permission(self):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
