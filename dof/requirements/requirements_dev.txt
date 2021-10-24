@@ -10,19 +10,19 @@ asgiref==3.4.1
     #   django
 beautifulsoup4==4.10.0
     # via -r requirements_dev.in
-cachetools==4.2.2
+cachetools==4.2.4
     # via
     #   -r requirements.txt
     #   google-auth
-certifi==2021.5.30
+certifi==2021.10.8
     # via
     #   -r requirements.txt
     #   requests
-charset-normalizer==2.0.6
+charset-normalizer==2.0.7
     # via
     #   -r requirements.txt
     #   requests
-coverage==5.5
+coverage==6.0.2
     # via -r requirements_dev.in
 django==3.1.13
     # via
@@ -33,13 +33,13 @@ django-debug-toolbar==3.2.2
     # via -r requirements_dev.in
 django-extensions==3.1.3
     # via -r requirements_dev.in
-google-api-core==2.0.1
+google-api-core==2.1.1
     # via
     #   -r requirements.txt
     #   google-api-python-client
-google-api-python-client==2.22.0
+google-api-python-client==2.27.0
     # via -r requirements.txt
-google-auth==2.1.0
+google-auth==2.3.0
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -55,22 +55,22 @@ googleapis-common-protos==1.53.0
     #   google-api-core
 html5validator==0.4.0
     # via -r requirements_dev.in
-httplib2==0.19.1
+httplib2==0.20.1
     # via
     #   -r requirements.txt
     #   google-api-python-client
     #   google-auth-httplib2
-idna==3.2
+idna==3.3
     # via
     #   -r requirements.txt
     #   requests
 packaging==21.0
     # via pip-review
-pip-licenses==3.5.2
+pip-licenses==3.5.3
     # via -r requirements_dev.in
 pip-review==1.1.0
     # via -r requirements_dev.in
-protobuf==3.18.0
+protobuf==3.19.0
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -95,13 +95,13 @@ pyparsing==2.4.7
     #   -r requirements.txt
     #   httplib2
     #   packaging
-pytz==2021.1
+pytz==2021.3
     # via
     #   -r requirements.txt
     #   django
-pyyaml==5.4.1
+pyyaml==6.0
     # via html5validator
-qrcode==7.3
+qrcode==7.3.1
     # via -r requirements.txt
 requests==2.26.0
     # via
@@ -122,7 +122,7 @@ sqlparse==0.4.2
     #   -r requirements.txt
     #   django
     #   django-debug-toolbar
-uritemplate==3.0.1
+uritemplate==4.1.1
     # via
     #   -r requirements.txt
     #   google-api-python-client
