@@ -34,7 +34,7 @@ class LeveringenView(UserPassesTestMixin, ListView):
 
     def test_func(self):
         """ called by the UserPassesTestMixin to verify the user has permissions to use this view """
-        return self.request.user.is_authenticated and account_rechten_is_otp_verified(self.request)
+        return self.request.user.is_authenticated
 
     def handle_no_permission(self):
         """ gebruiker heeft geen toegang --> redirect naar het plein """
