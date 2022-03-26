@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#  Copyright (c) 2020-2021 Ramon van der Winkel.
+#  Copyright (c) 2020-2022 Ramon van der Winkel.
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
@@ -355,6 +355,8 @@ class Command(BaseCommand):
                 prod.append(lines[nr])
         # for
 
+        # print('prods: %s' % repr(prods))
+
         order = list()
         for prod in prods:
             regel = " ".join(prod)
@@ -376,11 +378,11 @@ class Command(BaseCommand):
 
             # special cases, als er geen taal aangegeven is
             if not gevonden_taal:
-                if 'Subtotal (incl. VAT)' in html:
+                if 'Subtotal (' in html:
                     gevonden_taal = 'EN'
-                elif 'Subtotaal (incl. btw)' in html:
+                elif 'Subtotaal (' in html:
                     gevonden_taal = 'NL'
-                elif 'Insgesamt inkl. MwSt.' in html:
+                elif 'Insgesamt ' in html:
                     gevonden_taal = 'DU'
                 else:
                     my_logger.error('Geen taal keuze voor product %s uit inbox pk=%s' % (repr(regel), inbox.pk))
