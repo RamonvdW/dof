@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#  Copyright (c) 2021 Ramon van der Winkel.
+#  Copyright (c) 2021-2022 Ramon van der Winkel.
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
@@ -53,7 +53,15 @@ urlpatterns = [
 
     path('leveringen/niet-gevonden/',
          view_leveringen.LeveringNietGevondenView.as_view(),
-         name='levering-niet-gevonden')
+         name='levering-niet-gevonden'),
+
+    path('leveringen/gratis/',
+         view_leveringen.KlantgegevensGratisLeveringen.as_view(),
+         name='gratis-leveringen'),
+
+    path('leveringen/gratis/<product_naam>/',
+         view_leveringen.KlantgegevensGratisLeveringen.as_view(),
+         name='gratis-leveringen-product')
 ]
 
 # end of file

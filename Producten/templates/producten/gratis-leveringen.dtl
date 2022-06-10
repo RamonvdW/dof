@@ -1,0 +1,54 @@
+{% extends 'plein/site_layout.dtl' %}
+{% comment %}
+                Copyright (c) 2022 Ramon van der Winkel.
+                All rights reserved.
+                Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
+{% endcomment %}
+{% load static %}
+
+{% block title %}Gratis Leveringen{% endblock %}
+
+{% block pagina %}
+
+    {% include 'overig/site-feedback-sidebar.dtl' with op_pagina="gratis-leveringen" %}
+
+    <h4>Leveringen</h4>
+
+    <p>Op deze pagina tonen we de leveringen die aangemaakt zijn voor de opdrachten.</p>
+
+    <p>
+        <a class="btn-dof-blauw" href="{% url 'Plein:plein' %}">Sluit dit scherm</a>
+    </p>
+
+    <p>Analyse over levering van producten met de tekst <b>{{ product_naam }}</b> in de naam.</p>
+    <p>Opdrachten vanaf {{ oudste_opdracht }} zijn meegenomen.</p>
+
+    {% for taal, taal_beschrijving, aantal_leveringen, leveringen in talen %}
+
+        <h5>Taal: {{ taal_beschrijving }}</h5>
+
+        <p>Product(en):<br>
+            {% for product in producten %}
+                {% if product.taal == taal %}
+                    <span style="padding-left:20px">{{ product.korte_beschrijving }}</span><br>
+                {% endif %}
+            {% endfor %}
+        </p>
+
+        <p>Aantal klanten die geen andere opdrachten gegeven hebben: {{ aantal_leveringen }}</p>
+
+        <p class="white" style="padding:30px">
+            {% for naam, email in leveringen %}
+                <span>{{ naam }};{{ email }}</span><br>
+            {% endfor %}
+        </p>
+
+        <p>&nbsp;</p>
+
+    {% endfor %}
+
+    <p>
+        <a class="btn-dof-blauw" href="{% url 'Plein:plein' %}">Sluit dit scherm</a>
+    </p>
+
+{% endblock %}

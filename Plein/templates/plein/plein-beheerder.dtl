@@ -1,6 +1,6 @@
 {% extends 'plein/site_layout.dtl' %}
 {% comment %}
-                Copyright (c) 2020-2021 Ramon van der Winkel.
+                Copyright (c) 2020-2022 Ramon van der Winkel.
                 All rights reserved.
                 Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 {% endcomment %}
@@ -26,6 +26,10 @@
         <!-- leveringsgeschiedenis en statistiek -->
         {% url 'Producten:leveringen' as card_url %}
         {% include 'plein/card.dtl' with title="Leveringen" text="Bekijk de leveringen die gedaan zijn." icon="analytics" url=card_url %}
+
+        <!-- gratis leveringen -->
+        {% url 'Producten:gratis-leveringen' as card_url %}
+        {% include 'plein/card.dtl' with title="Gratis" text="Gegevens van klanten die alleen een gratis product afgenomen hebben." icon="redeem" url=card_url %}
     </div>
 
     <!--
