@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#  Copyright (c) 2021 Ramon van der Winkel.
+#  Copyright (c) 2021-2022 Ramon van der Winkel.
 #  All rights reserved.
 #  Licensed under BSD-3-Clause-Clear. See LICENSE file for details.
 
@@ -38,6 +38,12 @@ DATABASES = {
 }
 
 # the issuer name that is sent to the OTP application in the QR code
-OTP_ISSUER_NAME = "test.st-visir.nl"
+OTP_ISSUER_NAME = "test.something.nl"
+
+DEFAULT_EIGENAAR = 'owner'
+
+DOF_FILE_STORE = '/tmp/test_dof/'
+
+EMAIL_ADDRESS_WHITELIST = ()
 
 # end of file
