@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(PROJ_DIR)
 
 # version of the site
 # this is used to keep site feedback separated by version
-SITE_VERSIE = '2022-06-10'
+SITE_VERSIE = '2022-08-28'
 
 # modules van de site
 INSTALLED_APPS = [
@@ -170,6 +170,8 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
+# globale keuze voor automatische primary keys
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # logging to syslog
 # zie https://docs.djangoproject.com/en/3.0/topics/logging/
