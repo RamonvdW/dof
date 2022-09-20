@@ -79,7 +79,7 @@ class Command(BaseCommand):
 
         opdracht.is_vrijgegeven_voor_levering = True
 
-        # zoek matchende producten
+        # zoek producten
         papieren_product_gevonden = False
         prod_links = list()
         for taal, regel in order:
@@ -131,8 +131,8 @@ class Command(BaseCommand):
             # te vaak.. my_logger.warning('Opdracht pk=%s niet kunnen koppelen aan een product' % opdracht.pk)
 
             if papieren_product_gevonden:
-                # we hebben een match gehad op een papieren product
-                # verder geen matches, dus deze kan helemaal weg
+                # we hebben een papieren product gevonden
+                # verder geen producten gevonden, dus deze kan helemaal weg
                 opdracht.is_papieren_levering = True
                 opdracht.is_afgehandeld = True
                 opdracht.save()
@@ -166,6 +166,10 @@ class Command(BaseCommand):
         opdracht.mail_body = msg
         opdracht.subject = template.subject
         opdracht.save()
+
+        if len(opdracht.mail_body) < 10 or len(opdracht.subject) < 5:
+            my_logger.error('Geen email body of subject voor opdracht met pk=%s' % opdracht.pk)
+            return False
 
         # indien automatisch vrijgegeven, verstuur meteen de e-mail
         if opdracht.is_vrijgegeven_voor_levering:
@@ -427,7 +431,6 @@ class Command(BaseCommand):
 
     def _monitor_nieuwe_mutaties(self):
         # monitor voor nieuwe ScoreHist
-        prev_count = 0      # moet 0 zijn: beschermd tegen query op lege mutatie tabel
         now = datetime.datetime.now()
         while now < self.stop_at:                   # pragma: no branch
             # self.stdout.write('tick')
