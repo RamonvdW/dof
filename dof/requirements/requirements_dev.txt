@@ -14,7 +14,7 @@ cachetools==5.2.0
     # via
     #   -r requirements.txt
     #   google-auth
-certifi==2022.6.15
+certifi==2022.9.24
     # via
     #   -r requirements.txt
     #   requests
@@ -29,17 +29,17 @@ django==3.2.15
     #   -r requirements.txt
     #   django-debug-toolbar
     #   django-extensions
-django-debug-toolbar==3.6.0
+django-debug-toolbar==3.7.0
     # via -r requirements_dev.in
-django-extensions==3.2.0
+django-extensions==3.2.1
     # via -r requirements_dev.in
-google-api-core==2.8.2
+google-api-core==2.10.1
     # via
     #   -r requirements.txt
     #   google-api-python-client
-google-api-python-client==2.58.0
+google-api-python-client==2.63.0
     # via -r requirements.txt
-google-auth==2.11.0
+google-auth==2.11.1
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -60,7 +60,7 @@ httplib2==0.20.4
     #   -r requirements.txt
     #   google-api-python-client
     #   google-auth-httplib2
-idna==3.3
+idna==3.4
     # via
     #   -r requirements.txt
     #   requests
@@ -70,7 +70,7 @@ pip-licenses==3.5.4
     # via -r requirements_dev.in
 pip-review==1.2.0
     # via -r requirements_dev.in
-protobuf==4.21.5
+protobuf==4.21.6
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -88,7 +88,7 @@ pyasn1-modules==0.2.8
     # via
     #   -r requirements.txt
     #   google-auth
-pyotp==2.6.0
+pyotp==2.7.0
     # via -r requirements.txt
 pyparsing==3.0.9
     # via
@@ -118,7 +118,7 @@ six==1.16.0
     #   google-auth-httplib2
 soupsieve==2.3.2.post1
     # via beautifulsoup4
-sqlparse==0.4.2
+sqlparse==0.4.3
     # via
     #   -r requirements.txt
     #   django
