@@ -386,7 +386,7 @@ class Command(BaseCommand):
                     gevonden_taal = 'EN'
                 elif 'Subtotaal (' in html:
                     gevonden_taal = 'NL'
-                elif 'Insgesamt ' in html:
+                elif 'Insgesamt' in html:
                     gevonden_taal = 'DU'
                 else:
                     my_logger.error('Geen taal keuze voor product %s uit inbox pk=%s' % (repr(regel), inbox.pk))
