@@ -22,9 +22,9 @@ charset-normalizer==2.1.1
     # via
     #   -r requirements.txt
     #   requests
-coverage==6.4.4
+coverage==6.5.0
     # via -r requirements_dev.in
-django==3.2.15
+django==3.2.16
     # via
     #   -r requirements.txt
     #   django-debug-toolbar
@@ -33,13 +33,13 @@ django-debug-toolbar==3.7.0
     # via -r requirements_dev.in
 django-extensions==3.2.1
     # via -r requirements_dev.in
-google-api-core==2.10.1
+google-api-core==2.10.2
     # via
     #   -r requirements.txt
     #   google-api-python-client
-google-api-python-client==2.63.0
+google-api-python-client==2.65.0
     # via -r requirements.txt
-google-auth==2.11.1
+google-auth==2.13.0
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -66,16 +66,16 @@ idna==3.4
     #   requests
 packaging==21.3
     # via pip-review
-pip-licenses==3.5.4
+pip-licenses==3.5.5
     # via -r requirements_dev.in
 pip-review==1.2.0
     # via -r requirements_dev.in
-protobuf==4.21.6
+protobuf==4.21.9
     # via
     #   -r requirements.txt
     #   google-api-core
     #   googleapis-common-protos
-psycopg2-binary==2.9.3
+psycopg2-binary==2.9.5
     # via -r requirements.txt
 ptable==0.9.2
     # via pip-licenses
@@ -95,7 +95,7 @@ pyparsing==3.0.9
     #   -r requirements.txt
     #   httplib2
     #   packaging
-pytz==2022.2.1
+pytz==2022.5
     # via
     #   -r requirements.txt
     #   django

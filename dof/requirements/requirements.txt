@@ -12,15 +12,15 @@ certifi==2022.9.24
     # via requests
 charset-normalizer==2.1.1
     # via requests
-django==3.2.15
+django==3.2.16
     # via
     #   -c constraints.in
     #   -r requirements.in
-google-api-core==2.10.1
+google-api-core==2.10.2
     # via google-api-python-client
-google-api-python-client==2.63.0
+google-api-python-client==2.65.0
     # via -r requirements.in
-google-auth==2.11.1
+google-auth==2.13.0
     # via
     #   -r requirements.in
     #   google-api-core
@@ -36,11 +36,11 @@ httplib2==0.20.4
     #   google-auth-httplib2
 idna==3.4
     # via requests
-protobuf==4.21.6
+protobuf==4.21.9
     # via
     #   google-api-core
     #   googleapis-common-protos
-psycopg2-binary==2.9.3
+psycopg2-binary==2.9.5
     # via -r requirements.in
 pyasn1==0.4.8
     # via
@@ -52,7 +52,7 @@ pyotp==2.7.0
     # via -r requirements.in
 pyparsing==3.0.9
     # via httplib2
-pytz==2022.2.1
+pytz==2022.5
     # via django
 qrcode==7.3.1
     # via -r requirements.in
