@@ -9,6 +9,7 @@
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.db.utils import DataError, OperationalError
 from django.db.models import F
 from Account.models import Account
 from Mailer.models import Inbox, mailer_email_is_valide, mailer_queue_email
@@ -16,9 +17,11 @@ from Overig.background_sync import BackgroundSync
 from Producten.models import (Product, Opdracht, Levering, BerichtTemplate,
                               get_path_to_product_bestand)
 import django.db.utils
+import traceback
 import datetime
 import logging
 import json
+import sys
 import os
 
 
@@ -478,12 +481,17 @@ class Command(BaseCommand):
         # vang generieke fouten af
         try:
             self._monitor_nieuwe_mutaties()
-        except django.db.utils.DataError as exc:        # pragma: no coverage
+        except (DataError, OperationalError) as exc:    # pragma: no cover
+            # OperationalError treed op bij system shutdown, als database gesloten wordt
+            _, _, tb = sys.exc_info()
+            lst = traceback.format_tb(tb)
             self.stderr.write('[ERROR] Onverwachte database fout: %s' % str(exc))
-        except KeyboardInterrupt:                       # pragma: no coverage
+            self.stderr.write('Traceback:')
+            self.stderr.write(''.join(lst))
+        except KeyboardInterrupt:                       # pragma: no cover
             pass
 
-        self.stdout.write('[DEBUG] Aantal pings ontvangen: %s' % self._count_ping)
+        # self.stdout.write('[DEBUG] Aantal pings ontvangen: %s' % self._count_ping)
 
         self.stdout.write('Klaar')
 
