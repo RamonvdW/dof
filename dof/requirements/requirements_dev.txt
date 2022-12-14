@@ -14,7 +14,7 @@ cachetools==5.2.0
     # via
     #   -r requirements.txt
     #   google-auth
-certifi==2022.9.24
+certifi==2022.12.7
     # via
     #   -r requirements.txt
     #   requests
@@ -29,17 +29,17 @@ django==3.2.16
     #   -r requirements.txt
     #   django-debug-toolbar
     #   django-extensions
-django-debug-toolbar==3.7.0
+django-debug-toolbar==3.8.1
     # via -r requirements_dev.in
 django-extensions==3.2.1
     # via -r requirements_dev.in
-google-api-core==2.10.2
+google-api-core==2.11.0
     # via
     #   -r requirements.txt
     #   google-api-python-client
-google-api-python-client==2.66.0
+google-api-python-client==2.70.0
     # via -r requirements.txt
-google-auth==2.14.1
+google-auth==2.15.0
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -64,15 +64,15 @@ idna==3.4
     # via
     #   -r requirements.txt
     #   requests
-packaging==21.3
+packaging==22.0
     # via pip-review
-pip-licenses==4.0.1
+pip-licenses==4.0.3
     # via -r requirements_dev.in
-pip-review==1.2.0
+pip-review==1.3.0
     # via -r requirements_dev.in
 prettytable==3.5.0
     # via pip-licenses
-protobuf==4.21.9
+protobuf==4.21.12
     # via
     #   -r requirements.txt
     #   google-api-core
@@ -88,13 +88,12 @@ pyasn1-modules==0.2.8
     # via
     #   -r requirements.txt
     #   google-auth
-pyotp==2.7.0
+pyotp==2.8.0
     # via -r requirements.txt
 pyparsing==3.0.9
     # via
     #   -r requirements.txt
     #   httplib2
-    #   packaging
 pytz==2022.6
     # via
     #   -r requirements.txt
@@ -127,7 +126,7 @@ uritemplate==4.1.1
     # via
     #   -r requirements.txt
     #   google-api-python-client
-urllib3==1.26.12
+urllib3==1.26.13
     # via
     #   -r requirements.txt
     #   requests

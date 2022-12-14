@@ -8,7 +8,7 @@ asgiref==3.5.2
     # via django
 cachetools==5.2.0
     # via google-auth
-certifi==2022.9.24
+certifi==2022.12.7
     # via requests
 charset-normalizer==2.1.1
     # via requests
@@ -16,11 +16,11 @@ django==3.2.16
     # via
     #   -c constraints.in
     #   -r requirements.in
-google-api-core==2.10.2
+google-api-core==2.11.0
     # via google-api-python-client
-google-api-python-client==2.66.0
+google-api-python-client==2.70.0
     # via -r requirements.in
-google-auth==2.14.1
+google-auth==2.15.0
     # via
     #   -r requirements.in
     #   google-api-core
@@ -36,7 +36,7 @@ httplib2==0.21.0
     #   google-auth-httplib2
 idna==3.4
     # via requests
-protobuf==4.21.9
+protobuf==4.21.12
     # via
     #   google-api-core
     #   googleapis-common-protos
@@ -48,7 +48,7 @@ pyasn1==0.4.8
     #   rsa
 pyasn1-modules==0.2.8
     # via google-auth
-pyotp==2.7.0
+pyotp==2.8.0
     # via -r requirements.in
 pyparsing==3.0.9
     # via httplib2
@@ -68,5 +68,5 @@ sqlparse==0.4.3
     # via django
 uritemplate==4.1.1
     # via google-api-python-client
-urllib3==1.26.12
+urllib3==1.26.13
     # via requests
